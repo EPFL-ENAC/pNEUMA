@@ -1,15 +1,36 @@
-# enac-it4r-repo
+# pNEUMA
 
-Template with licences / github templates and contributing processes
+This is the pNEUMA project, which includes Python modules and data files.
 
-# Todo when setting up your github repo
+## Project Structure
 
-- [ ] Learn how to use github template repository: https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
-- [ ] Activate discussion (https://github.com/EPFL-ENAC/{YOUR-REPO-NAME}/settings)
-- [ ] Replace `{YOUR-REPO-NAME}` by the name of your repo
-- [ ] Modifiy or remove the `CITATION.cff` file. [How to format it ?](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-citation-files) 
-- [ ] Check if you need all those labels: https://github.com/EPFL-ENAC/{YOUR-REPO-NAME}/labels
-- [ ] Create your first milestone: https://github.com/EPFL-ENAC/{YOUR-REPO-NAME}/milestones
-- [ ] Protect your branch if you're a pro user: https://github.com/EPFL-ENAC/{YOUR-REPO-NAME}/settings/branches
+```bash
+pNEUMA/
+│
+├── modules/
+│   └── refactor.py
+│
+├── data/
+│   ├── input
+│       └── 20181101_d8_1000_1030.csv
+│   └── output
+│       └── 20181101_d8_1000_1030_snippet.csv
+│
+├── main.py
+│
+└── README.md
+```
 
 
+## Folders and Files
+
+- `modules/`: This folder contains the Python modules for the project.
+  - `refactor.py`: This module includes functions for refactoring data.
+
+- `data/`: This folder contains the input and output data files.
+  - `input/`: This folder stores the input data files, such as `20181101_d8_1000_1030.csv`.
+  - `output/`: This folder stores the output data files, such as `20181101_d8_1000_1030_snippet.csv`.
+
+- `main.py`: This is the main Python script that runs the project.
+
+- `README.md`: This file provides an overview and documentation for the project.
