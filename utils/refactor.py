@@ -40,9 +40,9 @@ class Refactor:
             if len(sublist) == x_size:
                 refactored.append(sublist)
 
-        print(
-            f"({fixed_elements[0]}/{self.size})\tRow refactored as shape"
-            + ":\t{x_size}x{len(refactored)}")
+        progress = f"({fixed_elements[0]}/{self.size})"
+        shape = f"{x_size}x{len(refactored)}"
+        print(f"{progress}\tRow refactored as shape: {shape}")
 
         return refactored
 
@@ -53,21 +53,18 @@ class Refactor:
         # Read row as a DataFrame
         df = pd.DataFrame(row, columns=self.cols)
 
-        # Strip `type` col and join it with track_id (10KB per row saved)
+        # Strip `type` col (10KB per row saved)
         df["type"] = df["type"].str.strip()
-        df["id"] = df[['track_id', 'type']].agg('_'.join, axis=1)
 
         # Keep only necessary columns (+90KB per row saved)
-        df = df[["id", "lat", "lon", "speed", "time"]]
+        df = df[["track_id", "type", "lat", "lon", "speed", "time"]]
 
         # Convert lat and lon from object to float64 (0KB saved)
+        df.track_id = df.track_id.astype("int")
         df.lat = df.lat.astype("float64")
         df.lon = df.lon.astype("float64")
 
-        # V1: Convert to float (10KB per row saved)
-        # df[["time", "speed"]] = df[["time", "speed"]].astype("float32")
-
-        # V2: Convert to float (10KB NOT saved, but more readable)
+        # Convert to float (10KB NOT saved, but more readable)
         df[["time", "speed"]] = df[["time", "speed"]].astype("float")
         df[["time", "speed"]] = df[["time", "speed"]].round(decimals=2)
 
@@ -80,21 +77,7 @@ class Refactor:
         path = f"data/output/{name}_{self.size}.csv"
         file.to_csv(path, index=False)
 
-    def analytic(self):
-        pass
-        # before = datetime.now()
-        # analytic = open("analytics.csv", "w")
-
-        # after = datetime.now()
-        # timelaps = round((after-before).total_seconds(),3)
-        # print(f"({row[0]}/{self.total_rows})\tRow refactored
-        # in {timelaps}s\tgiven {len(refactored)*x_size} data-points")
-        # analytic.write(f"{row[0]},{timelaps},{len(refactored)*x_size}\n")
-
-        # analytic.close()
-
-    def all(self, fixed: int, variable: int,
-            analytics: bool, relational: bool, size: int):
+    def all(self, fixed: int, variable: int, size: int):
         """
         Execution Flow
         TODO: docstring
@@ -108,10 +91,8 @@ class Refactor:
 
         self.fixed = fixed
         self.variable = variable
-        self.analytics = analytics  # NOT used yet
-        self.relational = relational  # NOT used yet
 
-        i = 0
+        i = 1
         for row in self.data:
             refactored_row = self.row(row)
             optimized_row = self.optimize_storage(refactored_row)

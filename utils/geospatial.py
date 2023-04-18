@@ -16,6 +16,7 @@ def to_point(df: pd.DataFrame,
     # Create a list of Point coordinates from DataFrame
     geometry = [Point(xy) for xy in zip(df[longitude], df[latitude])]
 
+    df.drop([longitude, latitude], axis=1)
     # If user prefers the function just to return the list of geometry points
     if geometry_only:
         geometry
