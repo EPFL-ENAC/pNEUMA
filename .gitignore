@@ -1,2 +1,16 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.ipynb
+.ipynb_checkpoints
+
+# C extensions
+*.so
+*.csv
+
+# data folder
+data/
 node_modules
 data/
+.DS_Store
