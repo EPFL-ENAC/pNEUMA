@@ -4,7 +4,7 @@
         "lat": 37.991496,
         "lng": 23.732299
     },
-    "zoom": 12,
+    "zoom": 17,
     "permanentLayerIds": [
         "background",
         "natural_earth"
@@ -14,44 +14,9 @@
     ],
     "selectableItems": [
         {
-            "label": "Piezo Locations",
-            "legend": "Locations of the piezometers (observation wells) for Nouakchott groundwater monitoring (CNRE)",
+            "label": "XXX",
             "ids": [
-                "piezometer_locations",
-                "piezometer_locations_labels"
-            ],
-            "selected": true
-        },
-        {
-            "label": "Limits",
-            "children": [
-                {
-                    "label": "City Limit",
-                    "legend": "Approximate limit of the dense urban areas of Nouakchott, estimated in early 2023.",
-                    "ids": [
-                        "approximate_development_limit"
-                    ],
-                    "selected": true
-                },
-                {
-                    "label": "Data Extent",
-                    "ids": [
-                        "data_extent"
-                    ]
-                }
-            ]
-        },
-        {
-            "label": "Topography",
-            "legend": "1-meter topographic contours of the project area, provided by the Region of Nouakchott.",
-            "ids": [
-                "topo_clipped"
-            ]
-        },
-        {
-            "label": "Test squares",
-            "ids": [
-                "test_areas"
+                "xxx"
             ],
             "selected": true
         }
