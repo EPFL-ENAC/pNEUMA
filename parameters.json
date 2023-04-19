@@ -1,0 +1,25 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EPFL-ENAC/it4r-webmap/main/schema/parameters.schema.json",
+  "center": {
+    "lat": 37.991496,
+    "lng": 23.732299
+  },
+  "zoom": 12,
+  "permanentLayerIds": [
+    "background",
+    "natural_earth"
+  ],
+  "popupLayerIds": [
+    "ath_20181101"
+  ],
+  "selectableItems": [
+    {
+      "label": "Data Points",
+      "legend": "2018/11/01 data points from drone 8",
+      "ids": [
+        "ath_20181101"
+      ],
+      "selected": true
+    }
+  ]
+}

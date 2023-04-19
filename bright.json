@@ -51,7 +51,7 @@
       "type": "vector",
       "url": "https://api.maptiler.com/tiles/v3/tiles.json?key={key}"
     },
-    "dkjhe22s": {
+    "ath_20181101": {
       "type": "vector",
       "tiles": [
         "https://github.com/EPFL-ENAC/pNEUMA/tree/feat/data_wrangling_william/data/tiles/{z}/{x}/{y}.pbf"
