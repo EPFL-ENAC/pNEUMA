@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/EPFL-ENAC/it4r-webmap/main/schema/parameters.schema.json",
   "center": {
-    "lat": 37.991496,
-    "lng": 23.732299
+    "lat": 18.0735,
+    "lng": -15.9582
   },
   "zoom": 12,
   "permanentLayerIds": [
@@ -10,14 +10,48 @@
     "natural_earth"
   ],
   "popupLayerIds": [
-    "ath_20181101"
+    "piezometer_locations"
   ],
   "selectableItems": [
     {
-      "label": "Data Points",
-      "legend": "2018/11/01 data points from drone 8",
+      "label": "Piezo Locations",
+      "legend": "Locations of the piezometers (observation wells) for Nouakchott groundwater monitoring (CNRE)",
       "ids": [
-        "ath_20181101"
+        "piezometer_locations",
+        "piezometer_locations_labels"
+      ],
+      "selected": true
+    },
+    {
+      "label": "Limits",
+      "children": [
+        {
+          "label": "City Limit",
+          "legend": "Approximate limit of the dense urban areas of Nouakchott, estimated in early 2023.",
+          "ids": [
+            "approximate_development_limit"
+          ],
+          "selected": true
+        },
+        {
+          "label": "Data Extent",
+          "ids": [
+            "data_extent"
+          ]
+        }
+      ]
+    },
+    {
+      "label": "Topography",
+      "legend": "1-meter topographic contours of the project area, provided by the Region of Nouakchott.",
+      "ids": [
+        "topo_clipped"
+      ]
+    },
+    {
+      "label": "Test squares",
+      "ids": [
+        "test_areas"
       ],
       "selected": true
     }
