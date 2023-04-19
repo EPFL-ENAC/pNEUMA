@@ -1,0 +1,133 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "SelectableGroupItem": {
+            "properties": {
+                "children": {
+                    "items": {
+                        "$ref": "#/definitions/SelectableSingleItem"
+                    },
+                    "type": "array"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "selected": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "SelectableItem": {
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/SelectableSingleItem"
+                },
+                {
+                    "$ref": "#/definitions/SelectableGroupItem"
+                }
+            ]
+        },
+        "SelectableSingleItem": {
+            "properties": {
+                "ids": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                "label": {
+                    "type": "string"
+                },
+                "legend": {
+                    "type": "string"
+                },
+                "selected": {
+                    "type": "boolean"
+                }
+            },
+            "type": "object"
+        },
+        "maplibregl.LngLat": {
+            "properties": {
+                "lat": {
+                    "type": "number"
+                },
+                "lng": {
+                    "type": "number"
+                }
+            },
+            "type": "object"
+        },
+        "maplibregl.LngLatLike": {
+            "anyOf": [
+                {
+                    "items": [
+                        {
+                            "type": "number"
+                        },
+                        {
+                            "type": "number"
+                        }
+                    ],
+                    "maxItems": 2,
+                    "minItems": 2,
+                    "type": "array"
+                },
+                {
+                    "$ref": "#/definitions/maplibregl.LngLat"
+                },
+                {
+                    "properties": {
+                        "lat": {
+                            "type": "number"
+                        },
+                        "lng": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                },
+                {
+                    "properties": {
+                        "lat": {
+                            "type": "number"
+                        },
+                        "lon": {
+                            "type": "number"
+                        }
+                    },
+                    "type": "object"
+                }
+            ]
+        }
+    },
+    "properties": {
+        "center": {
+            "$ref": "#/definitions/maplibregl.LngLatLike"
+        },
+        "permanentLayerIds": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "popupLayerIds": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "selectableItems": {
+            "items": {
+                "$ref": "#/definitions/SelectableItem"
+            },
+            "type": "array"
+        },
+        "zoom": {
+            "type": "number"
+        }
+    },
+    "type": "object"
+}
+

@@ -1,0 +1,115 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2709
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 HelveticaNeue-Bold;\f1\fnil\fcharset0 HelveticaNeue;\f2\fnil\fcharset0 Verdana;
+\f3\froman\fcharset0 Times-Roman;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww21100\viewh17780\viewkind0
+\deftab560
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f0\b\fs36 \cf0 pNEUMA web map template
+\f1\b0 \
+\
+Step by step on what I did\
+\
+\pard\pardeftab560\slleading20\pardirnatural\partightenfactor0
+\cf0 \
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 Convert geoJSON to .mbtiles\
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f2\fs32 \cf0 	$ brew install tippecanoe\
+	$ tippecanoe -o output.mbtiles input.geojson\
+	$ tippecanoe -zg -o out.mbtiles --drop-densest-as-needed in.geojson\
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f1\fs36 \cf0 \
+WebMap template\
+	Cloned webmap on local machine\
+	Created data folder\
+	Moved out.mbtiles to it\
+	Created config.json in data/\
+\
+\
+\
+\pard\pardeftab720\partightenfactor0
+\cf0 https://github.com/EPFL-ENAC/pNEUMA/tree/feat/data_wrangling_william/data/tiles \
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 \
+\
+____________________________\
+TECH MEETING\
+\
+(1)\
+2 type de fichier mbtiles --> classique (SQLite) ||  tiling en arborescence \
+wmts\
+\
+docker run -it --rm -v $\{pwd\}:/data\'a0\'a0 klokantech/tippecanoe\'a0 sh\
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 \expnd0\expndtw0\kerning0
+A. $ docker run -it --rm -v ~/Desktop/code/103_epfl/it4r-webmap:/data klokantech/tippecanoe sh\
+B. $ tippecanoe -zg --no-tile-compression -l data data_test.geojson -e tiles --force\
+B. $ tippecanoe -zg --no-tile-compression -l data *.geojson -e tiles --force --drop-densest-as-needed\
+\
+\
+\pard\pardeftab560\slleading20\partightenfactor0
+\cf0 \kerning1\expnd0\expndtw0 \
+(2) \ul https://maputnik.github.io/editor/#1.33/0/0 \ulnone \
+cr;er lien entre donnee et guichet carter, se cree via fichier e style\
+--> via le premier lien \
+le fichier JSON genere, on l ouvre, et dedans on modifie le tiles path to be an online repo where the tile folder is \
+\
+(3)\
+Ce dernier JSON, on le met aussi sur github\
+\
+(4) on link le lien de ce JSON dans \
+\
+docker run -it --rm -v $\{pwd\}:/data\'a0\'a0 klokantech/tippecanoe\'a0 sh\
+\
+\
+\
+\pard\pardeftab720\sa240\partightenfactor0
+
+\f3\fs24 \cf0 \expnd0\expndtw0\kerning0
+\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs28 \cf0 [16:07] Longchamp R\'e9gis\
+\pard\pardeftab720\sa280\partightenfactor0
+\cf0 docker run -it -v $\{/Users/williamwegener/\}/tileserv:/data -p 8080:80 maptiler/tileserver-gl\
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\fs36 \cf0 \kerning1\expnd0\expndtw0 \
+\
+\
+\
+\
+____________________________\
+\
+\
+\
+Then, try 0\
+\pard\pardeftab560\slleading20\partightenfactor0
+
+\f2\fs32 \cf0 	$ npm install\
+	$ npm run dev\
+ 
+\f1\fs36 \
+\
+Then, try 1\
+
+\f2\fs32 	$ npm install -g tileserver-gl
+\f1\fs36 \
+	But got an error related to my Node.js version\
+	I had to downgrade my Node.js version to a compatible one (tileserver-gl requires Node.js >=14.20.0 <19)\
+	... --> (2)\
+\
+And, try 2\
+	Open docker desktop\
+
+\f2\fs32 	$ docker pull maptiler/tileserver-gl\
+	$ docker run -it -v $(pwd)/data:/data -p 8080:80 maptiler/tileserver-gl -c /data/config.json --bind 0.0.0.0\
+\
+	
+\fs36 However, \ul http://localhost:8080\ulnone  or \ul http://127.0.0.1:8080\ulnone  don't work. Why?}
