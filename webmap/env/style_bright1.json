@@ -39,13 +39,6 @@
     "openmaptiles:version": "3.x",
     "maputnik:renderer": "mbgljs"
   },
-  "center": [
-    0,
-    0
-  ],
-  "zoom": 1,
-  "bearing": 0,
-  "pitch": 0,
   "sources": {
     "openmaptiles": {
       "type": "vector",

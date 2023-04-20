@@ -1,0 +1,131 @@
+{
+  "version": 8,
+  "name": "Empty Style",
+  "metadata": {
+    "maputnik:renderer": "mbgljs"
+  },
+  "sources": {
+    "5vjyz55i1": {
+      "type": "vector",
+      "tiles": [
+        "https://enacit4r-cdn.epfl.ch/pneuma/2023-04-20/{z}/{x}/{y}.pbf"
+      ],
+      "minZoom": 0,
+      "maxZoom": 22
+    },
+    "5vjyz55i1gt": {
+      "type": "vector",
+      "tiles": [
+        "https://github.com/EPFL-ENAC/pNEUMA/blob/feat/data_wrangling_william/data_processing/data/tiles/{z}/{x}/{y}.pbf?raw=true"
+      ],
+      "minZoom": 0,
+      "maxZoom": 22
+    },
+    "natural_earth_shaded_relief": {
+      "maxzoom": 22,
+      "tileSize": 256,
+      "tiles": [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}"
+      ],
+      "type": "raster"
+    }
+  },
+  "sprite": "",
+  "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "natural_earth",
+      "type": "raster",
+      "source": "natural_earth_shaded_relief",
+      "maxzoom": 24,
+      "paint": {
+        "raster-opacity": {
+          "base": 1.5,
+          "stops": [
+            [
+              0,
+              0.6
+            ],
+            [
+              6,
+              0.6
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "medium",
+      "type": "circle",
+      "metadata": {
+        "maputnik:comment": "Medium Vehicle"
+      },
+      "source": "5vjyz55i1",
+      "source-layer": "data",
+      "filter": [
+        "all",
+        [
+          "==",
+          "type",
+          "Medium Vehicle"
+        ]
+      ],
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "circle-stroke-color": "rgba(36, 241, 176, 1)",
+        "circle-color": "rgba(36, 241, 176, 1)",
+        "circle-stroke-width": 1,
+        "circle-radius": 2
+      }
+    },
+    {
+      "id": "car",
+      "type": "circle",
+      "source": "5vjyz55i1",
+      "source-layer": "data",
+      "filter": [
+        "all",
+        [
+          "==",
+          "type",
+          "Car"
+        ]
+      ],
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "circle-stroke-color": "rgba(36, 92, 241, 1)",
+        "circle-color": "rgba(36, 92, 241, 1)",
+        "circle-stroke-width": 1,
+        "circle-radius": 2
+      }
+    },
+    {
+      "id": "moto",
+      "type": "circle",
+      "source": "5vjyz55i1",
+      "source-layer": "data",
+      "filter": [
+        "all",
+        [
+          "==",
+          "type",
+          "Motorcycle"
+        ]
+      ],
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "circle-stroke-color": "rgba(241, 36, 74, 1)",
+        "circle-color": "rgba(241, 36, 74, 1)",
+        "circle-stroke-width": 1,
+        "circle-radius": 2
+      }
+    }
+  ],
+  "id": "qiko9zfl7"
+}

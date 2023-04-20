@@ -9,16 +9,27 @@
         "background",
         "natural_earth"
     ],
-    "popupLayerIds": [
-        "piezometer_locations"
-    ],
     "selectableItems": [
         {
-            "label": "XXX",
+            "label": "Cars",
             "ids": [
-                "xxx"
+                "car"
             ],
-            "selected": true
+            "selected": false
+        },
+        {
+            "label": "Motorcycle",
+            "ids": [
+                "moto"
+            ],
+            "selected": false
+        },
+        {
+            "label": "Medium Vehicle",
+            "ids": [
+                "medium"
+            ],
+            "selected": false
         }
     ]
 }
