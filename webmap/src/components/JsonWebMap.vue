@@ -51,19 +51,15 @@ watch(
 </script>
 
 <template>
-  <v-container class="fill-height" fluid>
+  <v-container class="fill-height pa-0" fluid>
     <v-row class="fill-height">
-      <v-col cols="12" md="3" sm="6">
+      <v-col cols="12" md="3" sm="6" class="pl-6">
         <v-row>
           <v-col>
             <LayerSelector v-model="selectedlayerIds" :items="parameters.selectableItems" />
           </v-col>
         </v-row>
-        <v-row>
-          <v-col>
-            <v-divider class="border-opacity-100" />
-          </v-col>
-        </v-row>
+        <v-divider class="border-opacity-100 mx-n3" />
         <v-row>
           <v-col>
             <v-card title="Legends" flat>
@@ -80,7 +76,7 @@ watch(
         </v-row>
       </v-col>
       <v-divider class="border-opacity-100" vertical />
-      <v-col cols="12" md="9" sm="6">
+      <v-col cols="12" md="9" sm="6" class="py-0 pl-0">
         <MapLibreMap
           ref="map"
           :center="parameters.center"
