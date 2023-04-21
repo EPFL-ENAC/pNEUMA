@@ -9,10 +9,7 @@ __pycache__/
 *.so
 *.csv
 
-# data folder
-data/geojson
-data/input
-data/output
+*/data/
 node_modules
 data/
 .DS_Store

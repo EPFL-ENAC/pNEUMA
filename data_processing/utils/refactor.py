@@ -86,6 +86,8 @@ class Refactor:
 
         if size > self.y_size:
             self.size = self.y_size
+            print(f"Max size ({self.size} track_ids) will " +
+                  f"be parsed (instead of {size} inputted).")
         else:
             self.size = size
 
@@ -104,3 +106,4 @@ class Refactor:
             i += 1
 
         self.save(file=df, name=self.name)
+        print(f"{self.name} - saved as csv file.")

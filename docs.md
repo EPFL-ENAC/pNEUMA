@@ -21,6 +21,10 @@ or
 
     tippecanoe -zg --no-tile-compression -l data *.geojson -e tiles --force --drop-densest-as-needed
 
+or 
+
+    tippecanoe -Z 0 -z 22 --no-tile-compression -l data *.geojson -e tiles --force --drop-densest-as-needed
+
 Where `*.geojson` is the input data, and `tiles` is the output folder.
 
 Alternatively, before entering the above-command, you can first run the following:

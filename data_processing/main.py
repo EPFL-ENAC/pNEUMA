@@ -31,11 +31,15 @@ def main(argv):
     refacted.all(fixed=fixed, variable=variable,
                  size=size)
 
+    # 8 min 65 sec to perform the below for 2478 track_id
     df = pd.read_csv(f"data/output/{file_name}_{size}.csv")
 
     gdf = geospatial.to_point(df=df)
+    geospatial.save(gdf=gdf, type="point", name=f"{file_name}_{size}")
 
-    geospatial.save(gdf=gdf, name=f"{file_name}_{size}")
+    # path = f"data/geojson/point_20181101_d8_1000_1030_{size}.geojson"
+    gdf = geospatial.to_line(gdf=gdf)
+    geospatial.save(gdf=gdf, type="line", name=f"{file_name}_{size}")
 
 
 if __name__ == '__main__':

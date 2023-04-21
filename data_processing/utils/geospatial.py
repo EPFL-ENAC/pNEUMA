@@ -1,7 +1,8 @@
 import pandas as pd
-from datetime import datetime
+import geopandas as gpd
 from geopandas import GeoDataFrame
 from shapely.geometry import Point
+from shapely.geometry import LineString
 
 
 def to_point(df: pd.DataFrame,
@@ -24,15 +25,32 @@ def to_point(df: pd.DataFrame,
     # Convert the DataFrame to a GeoDataFrame
     return GeoDataFrame(df, geometry=geometry)
 
+def to_line(gdf: GeoDataFrame|str) -> GeoDataFrame:
+    """
+    TODO DocString
+    """
 
-def save(gdf: GeoDataFrame, name: str, in_folder: bool = True):
+    if type(gdf) == str:
+        gdf = gpd.read_file(gdf)
+    
+    gdf = gdf.sort_values(['track_id', 'type', 'time'])
+
+    # Group the data by 'id' and create LineStrings
+    gdf_grouped = gdf.groupby('track_id')['geometry'].apply(lambda x: LineString(x.tolist()))
+    gdf_grouped = gpd.GeoDataFrame(gdf_grouped, geometry='geometry')
+
+    # Convert the DataFrame to a GeoDataFrame
+    return gdf_grouped
+
+
+def save(gdf: GeoDataFrame, name: str, in_folder: bool = True, type:str="point"):
     """
     TODO DocString
     """
     # If user want it directly stored in
     # the right folder without specifying
     if in_folder:
-        folder_path = "data/geojson/" + datetime.today().strftime("%Y-%m-%d_")
+        folder_path = f"data/geojson/{type}_"
         gdf.to_file(f"{folder_path}{name}.geojson", driver='GeoJSON')
     else:
         gdf.to_file(f"{name}.geojson", driver='GeoJSON')

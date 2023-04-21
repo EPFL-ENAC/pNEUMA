@@ -8,15 +8,7 @@
     "5vjyz55i1": {
       "type": "vector",
       "tiles": [
-        "https://enacit4r-cdn.epfl.ch/pneuma/2023-04-20/{z}/{x}/{y}.pbf"
-      ],
-      "minZoom": 0,
-      "maxZoom": 22
-    },
-    "5vjyz55i1gt": {
-      "type": "vector",
-      "tiles": [
-        "https://github.com/EPFL-ENAC/pNEUMA/blob/feat/data_wrangling_william/data_processing/data/tiles/{z}/{x}/{y}.pbf?raw=true"
+        "http://localhost:5173/data/tiles/2478/{z}/{x}/{y}.pbf"
       ],
       "minZoom": 0,
       "maxZoom": 22
