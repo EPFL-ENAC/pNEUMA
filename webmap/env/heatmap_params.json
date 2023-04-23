@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/EPFL-ENAC/it4r-webmap/main/schema/parameters.schema.json",
+  "center": {
+    "lat": 37.991496,
+    "lng": 23.732299
+  },
+  "zoom": 17,
+  "permanentLayerIds": ["background", "natural_earth"],
+  "selectableItems": [
+    {
+      "label": "Vehicles",
+      "ids": ["vehicles"],
+      "selected": false
+    },
+    {
+      "label": "Heatmap",
+      "ids": ["heatmap"],
+      "selected": true
+    }
+  ]
+}
