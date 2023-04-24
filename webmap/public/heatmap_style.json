@@ -10,11 +10,11 @@
       "minZoom": 16,
       "maxZoom": 24
     },
-    "natural_earth_shaded_relief": {
+    "background": {
       "maxzoom": 20,
       "tileSize": 256,
       "tiles": [
-        "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+        "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}@2x.png"
       ],
       "type": "raster"
     }
@@ -23,9 +23,9 @@
   "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
   "layers": [
     {
-      "id": "natural_earth",
+      "id": "background",
       "type": "raster",
-      "source": "natural_earth_shaded_relief",
+      "source": "background",
       "maxzoom": 24,
       "paint": {
         "raster-opacity": {
@@ -60,7 +60,7 @@
             "speed"
           ],
           0,
-          0.7,
+          0.2,
           100,
           1
         ],
