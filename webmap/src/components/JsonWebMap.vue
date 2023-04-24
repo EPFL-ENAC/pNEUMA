@@ -96,41 +96,10 @@ const getFilter = (): ExpressionSpecification => {
   return filter
 }
 
-watch(
-  () => vehiclesIds.value,
-  () =>
-    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
-)
-
-watch(
-  () => filterSingleVehicle.value,
-  () =>
-    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
-)
-
-watch(
-  () => vehicleId.value,
-  () =>
-    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
-)
-
-watch(
-  () => timeRange.value,
-  () =>
-    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
-)
-
-watch(
-  () => speedRange.value,
-  () =>
-    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
-)
-
-watch(
-  () => selectedTypes.value,
-  () =>
-    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
-)
+watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selectedTypes], () => {
+  map.value?.setFilter('vehicles', getFilter())
+  map.value?.setFilter('heatmap', getFilter())
+})
 </script>
 
 <template>

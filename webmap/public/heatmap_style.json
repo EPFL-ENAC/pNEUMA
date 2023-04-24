@@ -40,8 +40,20 @@
       "source-layer": "data",
       "maxzoom": 24,
       "paint": {
-        "heatmap-weight": ["interpolate", ["linear"], ["get", "speed"], 0, 0.7, 100, 1],
-        "heatmap-intensity": 0.2,
+        "heatmap-weight": [
+          "interpolate",
+          ["linear"],
+          ["get", "speed"],
+          0,
+          1,
+          10,
+          0.9,
+          25,
+          0.3,
+          50,
+          0
+        ],
+        "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 17, 0.2, 24, 2],
         "heatmap-color": [
           "interpolate",
           ["linear"],
@@ -59,7 +71,7 @@
           1,
           "rgb(178,24,43)"
         ],
-        "heatmap-radius": 10
+        "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 17, 10, 24, 50]
       }
     },
     {
