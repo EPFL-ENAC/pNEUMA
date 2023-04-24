@@ -1,0 +1,125 @@
+{
+  "version": 8,
+  "name": "Empty Style",
+  "sources": {
+    "pneuma": {
+      "type": "vector",
+      "tiles": [
+        "https://enacit4r-cdn.epfl.ch/pneuma/2023-04-24/tiles/{z}/{x}/{y}.pbf"
+      ],
+      "minZoom": 16,
+      "maxZoom": 24
+    },
+    "natural_earth_shaded_relief": {
+      "maxzoom": 20,
+      "tileSize": 256,
+      "tiles": [
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+      ],
+      "type": "raster"
+    }
+  },
+  "sprite": "",
+  "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "natural_earth",
+      "type": "raster",
+      "source": "natural_earth_shaded_relief",
+      "maxzoom": 24,
+      "paint": {
+        "raster-opacity": {
+          "base": 1.5,
+          "stops": [
+            [
+              0,
+              0.6
+            ],
+            [
+              6,
+              0.6
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "id": "heatmap",
+      "type": "heatmap",
+      "source": "pneuma",
+      "source-layer": "data",
+      "maxzoom": 24,
+      "paint": {
+        "heatmap-weight": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "get",
+            "speed"
+          ],
+          0,
+          0.7,
+          100,
+          1
+        ],
+        "heatmap-intensity": 0.2,
+        "heatmap-color": [
+          "interpolate",
+          [
+            "linear"
+          ],
+          [
+            "heatmap-density"
+          ],
+          0,
+          "rgba(33,102,172,0)",
+          0.2,
+          "rgb(103,169,207)",
+          0.4,
+          "rgb(209,229,240)",
+          0.6,
+          "rgb(253,219,199)",
+          0.8,
+          "rgb(239,138,98)",
+          1,
+          "rgb(178,24,43)"
+        ],
+        "heatmap-radius": 10
+      }
+    },
+    {
+      "id": "vehicles",
+      "type": "circle",
+      "source": "pneuma",
+      "source-layer": "data",
+      "layout": {
+        "visibility": "visible"
+      },
+      "paint": {
+        "circle-color": [
+          "interpolate-hcl",
+          [
+            "linear"
+          ],
+          [
+            "to-number",
+            [
+              "get",
+              "speed"
+            ]
+          ],
+          0,
+          "green",
+          30,
+          "yellow",
+          60,
+          "red"
+        ],
+        "circle-opacity": 0.3,
+        "circle-stroke-color": "rgba(0,0,0,0.2)"
+      }
+    }
+  ]
+}

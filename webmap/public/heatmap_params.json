@@ -5,16 +5,22 @@
     "lng": 23.732299
   },
   "zoom": 17,
-  "permanentLayerIds": ["background", "natural_earth"],
+  "permanentLayerIds": [
+    "natural_earth"
+  ],
   "selectableItems": [
     {
       "label": "Vehicles",
-      "ids": ["vehicles"],
+      "ids": [
+        "vehicles"
+      ],
       "selected": false
     },
     {
       "label": "Heatmap",
-      "ids": ["heatmap"],
+      "ids": [
+        "heatmap"
+      ],
       "selected": true
     }
   ]
