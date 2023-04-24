@@ -3,6 +3,7 @@ import LayerSelector from '@/components/LayerSelector.vue'
 import MapLibreMap from '@/components/MapLibreMap.vue'
 import type { Parameters } from '@/utils/jsonWebMap'
 import axios from 'axios'
+import type { ExpressionSpecification } from 'maplibre-gl'
 import { computed, ref, shallowRef, triggerRef, watch } from 'vue'
 
 const props = defineProps<{
@@ -18,6 +19,15 @@ const filterIds = computed<string[]>(() => [
   ...(parameters.value.permanentLayerIds ?? []),
   ...selectedlayerIds.value
 ])
+
+const filterSingleVehicle = ref<boolean>(false)
+const vehiclesIds = ref<number[]>([0, 400])
+const timeRange = ref<number[]>([0, 1000])
+const speedRange = ref<number[]>([0, 100])
+const vehicleId = ref<number>(0)
+const vehicleTypes = ['Taxi', 'Bus', 'Heavy Vehicle', 'Medium Vehicle', 'Motorcycle', 'Car']
+const selectedTypes = ref<string[]>(vehicleTypes)
+
 const legendItems = computed(() =>
   (parameters.value.selectableItems ?? [])
     .flatMap((item) => ('children' in item ? item.children : item))
@@ -48,6 +58,79 @@ watch(
   },
   { immediate: true }
 )
+
+const getIdsFilter = (): ExpressionSpecification[] => {
+  if (filterSingleVehicle.value) return [['==', ['get', 'track_id'], vehicleId.value]]
+  else
+    return [
+      ['>=', ['get', 'track_id'], vehiclesIds.value[0]],
+      ['<=', ['get', 'track_id'], vehiclesIds.value[1]]
+    ]
+}
+const getTimeFilter = (): ExpressionSpecification[] => {
+  return [
+    ['>=', ['get', 'time'], timeRange.value[0]],
+    ['<=', ['get', 'time'], timeRange.value[1]]
+  ]
+}
+
+const getSpeedFilter = (): ExpressionSpecification[] => {
+  return [
+    ['>=', ['get', 'speed'], speedRange.value[0]],
+    ['<=', ['get', 'speed'], speedRange.value[1]]
+  ]
+}
+
+const getTypeFilter = (): ExpressionSpecification => {
+  return ['in', ['get', 'type'], ['literal', selectedTypes.value as ExpressionSpecification]]
+}
+const getFilter = (): ExpressionSpecification => {
+  const filter: ExpressionSpecification = [
+    'all',
+    ...getIdsFilter(),
+    ...getTimeFilter(),
+    getTypeFilter(),
+    ...getSpeedFilter()
+  ]
+  console.log(filter)
+  return filter
+}
+
+watch(
+  () => vehiclesIds.value,
+  () =>
+    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
+)
+
+watch(
+  () => filterSingleVehicle.value,
+  () =>
+    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
+)
+
+watch(
+  () => vehicleId.value,
+  () =>
+    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
+)
+
+watch(
+  () => timeRange.value,
+  () =>
+    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
+)
+
+watch(
+  () => speedRange.value,
+  () =>
+    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
+)
+
+watch(
+  () => selectedTypes.value,
+  () =>
+    map.value?.setFilter('vehicles', getFilter()) || map.value?.setFilter('heatmap', getFilter())
+)
 </script>
 
 <template>
@@ -57,6 +140,83 @@ watch(
         <v-row>
           <v-col>
             <LayerSelector v-model="selectedlayerIds" :items="parameters.selectableItems" />
+            <v-card>
+              <v-card-title> Vehicle IDs </v-card-title>
+              <v-card-text>
+                <v-checkbox
+                  v-model="filterSingleVehicle"
+                  density="compact"
+                  hide-details
+                  label="Select single vehicle"
+                />
+                <v-range-slider
+                  v-if="!filterSingleVehicle"
+                  v-model="vehiclesIds"
+                  hide-details
+                  :min="0"
+                  :max="500"
+                  step="5"
+                  strict
+                  density="compact"
+                  thumb-label
+                ></v-range-slider>
+                <v-slider
+                  v-if="filterSingleVehicle"
+                  v-model="vehicleId"
+                  hide-details
+                  :min="0"
+                  :max="500"
+                  step="5"
+                  strict
+                  density="compact"
+                  thumb-label
+                ></v-slider>
+              </v-card-text>
+            </v-card>
+            <v-card>
+              <v-card-title> Time range in seconds </v-card-title>
+              <v-card-text>
+                <v-range-slider
+                  v-model="timeRange"
+                  hide-details
+                  :min="0"
+                  :max="1000"
+                  step="5"
+                  strict
+                  density="compact"
+                  thumb-label
+                ></v-range-slider>
+              </v-card-text>
+            </v-card>
+            <v-card>
+              <v-card-title> Vehicle type </v-card-title>
+              <v-card-text>
+                <v-checkbox
+                  v-for="(item, index) in vehicleTypes"
+                  :key="index"
+                  v-model="selectedTypes"
+                  density="compact"
+                  hide-details
+                  :label="item"
+                  :value="item"
+                />
+              </v-card-text>
+            </v-card>
+            <v-card>
+              <v-card-title> Speed range in km/h </v-card-title>
+              <v-card-text>
+                <v-range-slider
+                  v-model="speedRange"
+                  hide-details
+                  :min="0"
+                  :max="100"
+                  step="1"
+                  strict
+                  density="compact"
+                  thumb-label
+                ></v-range-slider>
+              </v-card-text>
+            </v-card>
           </v-col>
         </v-row>
         <v-divider class="border-opacity-100 mx-n3" />

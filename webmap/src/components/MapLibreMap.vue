@@ -4,18 +4,17 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import {
   FullscreenControl,
   GeolocateControl,
-  Map,
+  Map as Maplibre,
   NavigationControl,
   Popup,
   ScaleControl,
+  type FilterSpecification,
   type LngLatLike,
+  type StyleSetterOptions,
   type StyleSpecification
 } from 'maplibre-gl'
 import { onMounted, ref, watch } from 'vue'
 
-defineExpose({
-  update
-})
 const props = withDefaults(
   defineProps<{
     styleSpec: string | StyleSpecification
@@ -41,10 +40,10 @@ const props = withDefaults(
 )
 
 const loading = ref(true)
-let map: Map | undefined = undefined
+let map: Maplibre | undefined = undefined
 
 onMounted(() => {
-  map = new Map({
+  map = new Maplibre({
     container: 'maplibre-map',
     style: props.styleSpec,
     center: props.center,
@@ -59,6 +58,30 @@ onMounted(() => {
     filterLayers(props.filterIds)
   })
   loading.value = false
+})
+
+let throttleTimer = new Map<string, boolean>([])
+
+const throttle = (callback: Function, id: string, time: number) => {
+  if (throttleTimer.get(id)) return
+  throttleTimer.set(id, true)
+  setTimeout(() => {
+    callback()
+    throttleTimer.set(id, false)
+  }, time)
+}
+
+const setFilter = (
+  layerId: string,
+  filter?: FilterSpecification | null | undefined,
+  options?: StyleSetterOptions | undefined
+) => {
+  throttle(() => map?.setFilter(layerId, filter, options), layerId, 100)
+}
+
+defineExpose({
+  update,
+  setFilter
 })
 
 watch(

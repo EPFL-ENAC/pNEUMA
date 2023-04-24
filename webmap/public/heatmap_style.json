@@ -4,18 +4,14 @@
   "sources": {
     "pneuma": {
       "type": "vector",
-      "tiles": [
-        "https://enacit4r-cdn.epfl.ch/pneuma/2023-04-24/tiles/{z}/{x}/{y}.pbf"
-      ],
+      "tiles": ["https://enacit4r-cdn.epfl.ch/pneuma/2023-04-24/tiles/{z}/{x}/{y}.pbf"],
       "minZoom": 16,
       "maxZoom": 24
     },
     "background": {
       "maxzoom": 20,
       "tileSize": 256,
-      "tiles": [
-        "https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}@2x.png"
-      ],
+      "tiles": ["https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}@2x.png"],
       "type": "raster"
     }
   },
@@ -31,14 +27,8 @@
         "raster-opacity": {
           "base": 1.5,
           "stops": [
-            [
-              0,
-              0.6
-            ],
-            [
-              6,
-              0.6
-            ]
+            [0, 0.6],
+            [6, 0.6]
           ]
         }
       }
@@ -50,29 +40,12 @@
       "source-layer": "data",
       "maxzoom": 24,
       "paint": {
-        "heatmap-weight": [
-          "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "get",
-            "speed"
-          ],
-          0,
-          0.2,
-          100,
-          1
-        ],
+        "heatmap-weight": ["interpolate", ["linear"], ["get", "speed"], 0, 0.7, 100, 1],
         "heatmap-intensity": 0.2,
         "heatmap-color": [
           "interpolate",
-          [
-            "linear"
-          ],
-          [
-            "heatmap-density"
-          ],
+          ["linear"],
+          ["heatmap-density"],
           0,
           "rgba(33,102,172,0)",
           0.2,
@@ -100,24 +73,16 @@
       "paint": {
         "circle-color": [
           "interpolate-hcl",
-          [
-            "linear"
-          ],
-          [
-            "to-number",
-            [
-              "get",
-              "speed"
-            ]
-          ],
+          ["linear"],
+          ["to-number", ["get", "speed"]],
           0,
           "green",
           30,
           "yellow",
-          60,
+          100,
           "red"
         ],
-        "circle-opacity": 0.3,
+        "circle-opacity": 0.7,
         "circle-stroke-color": "rgba(0,0,0,0.2)"
       }
     }
