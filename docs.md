@@ -1,6 +1,6 @@
 # pNEUMA webmap documentation
 
-### Prerequisites
+## 0. Clean the data
 
 To utilize this webmap template, you will need a geospatial dataset. Ensure that your dataset is in the geoJSON format before proceeding. You can use Python's `geopandas` library to convert your dataset to the required format. Here's an outline of the steps:
 
@@ -12,8 +12,8 @@ To utilize this webmap template, you will need a geospatial dataset. Ensure that
 
 For more detailed guidance, refer to the `/data_processing/refactor.py` file.
 
-### 1. Convert geoJSON to .mbtiles
-
+## 1. Tile the layers
+### 1.a Tiling process
 Before starting, ensure that you have installed `tippecanoe`:
 
     $ brew install tippecanoe
@@ -43,6 +43,10 @@ Alternatively, you can run the following command before executing the above comm
 
 The final step is to upload your tiled data to an online server. This is necessary for the upcoming steps, where we will be importing data that follows the Vector XYZ URL format (e.g., https://example.com/data/tile/{x}/{y}/{z}.pbf).
 
+### 1.b Share the tiles
+
+TODO :)
+
 ---
 **💡 NOTE: Undetstanding the context**
 
@@ -51,11 +55,11 @@ Before proceeding, it's crucial to comprehend the purpose of the steps you're ab
 - `VITE_PARAMETERS_URL` refers to the frontend configuration of the webmap (e.g., webmap coordinates and user filtering options).
 - `VITE_STYLE_URL` relates to the map's styling and layers (including your data points).
 
-We recommend creating an `/env/` folder within the webmap project, placing your two JSON files there, and pointing to them relatively from the `.env`. The code should resemble:
+We recommend placing your two JSON files in the `/public/` folder, and pointing to them relatively from the `.env`. The code should resemble:
 
 ```javascript
-VITE_PARAMETERS_URL = /env/parameters.json
-VITE_STYLE_URL = /env/style.json
+VITE_PARAMETERS_URL = parameters.json
+VITE_STYLE_URL = style.json
 ```
 
 With this context in mind, the following chapters will guide you:
@@ -65,7 +69,7 @@ With this context in mind, the following chapters will guide you:
 
 ---
 
-### 2. Create the style of your webmap
+## 2. Style the layers
 
 First, you can start with this [JSON template](https://raw.githubusercontent.com/EPFL-ENAC/EIRA-data/main/Data_vector_style/style_raster_background.json).
 
@@ -90,7 +94,7 @@ To create your `style.json`, consider the following three aspects:
 After adjusting the layers and achieving a satisfactory result, click on `Export` and save it as a JSON file. You will later point to this file for the `VITE_STYLE_URL` variable in the `.env` file.
 
 
-### 3. Configure the parameters of your webmap
+## 3. Configure the front-end parameters
 
 Begin by using this [JSON template](https://raw.githubusercontent.com/EPFL-ENAC/EIRA-data/feature/parameters/Data_vector_style/parameters.json) as a starting point.
 
@@ -105,7 +109,7 @@ Make sure to configure these elements to match your specific requirements and th
 
 
 
-### 4. Final Steps
+## 4. Deployment
 
 You should now have everything in place. As outlined in the webmap template README.md file, execute the following commands to complete the setup:
 
@@ -123,8 +127,6 @@ This command will host your data locally at http://127.0.0.1:8000/. If you exami
     "http://localhost:5173/data/tiles/{z}/{x}/{y}.pbf"
 ]
 ```
-
-We hope your setup process was successful 👋
 
 ---
 **💡 NOTE: Vector vs Raster tiles**
@@ -151,3 +153,7 @@ In summary, raster tiles are pre-rendered images with a fixed resolution, while 
 
 
 ---
+
+
+## 5. Extending the template [bonus steps]
+
