@@ -10,6 +10,7 @@ __pycache__/
 *.csv
 
 */data/
+*/env/
 node_modules
 data/
 .DS_Store
