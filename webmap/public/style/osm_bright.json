@@ -1,0 +1,39 @@
+{
+    "version": 8,
+    "name": "OSM Bright",
+    "sources": {
+        "background": {
+            "maxzoom": 20,
+            "tileSize": 256,
+            "tiles": [
+                "https://tiles.stadiamaps.com/tiles/osm_bright/{z}/{x}/{y}@2x.png"
+            ],
+            "type": "raster"
+        }
+    },
+    "sprite": "",
+    "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+    "layers": [
+        {
+            "id": "background",
+            "type": "raster",
+            "source": "background",
+            "maxzoom": 20,
+            "paint": {
+                "raster-opacity": {
+                    "base": 1.5,
+                    "stops": [
+                        [
+                            0,
+                            0.6
+                        ],
+                        [
+                            6,
+                            0.6
+                        ]
+                    ]
+                }
+            }
+        }
+    ]
+}

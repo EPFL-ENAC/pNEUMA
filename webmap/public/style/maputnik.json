@@ -1,0 +1,39 @@
+{
+  "version": 8,
+  "name": "Maputnik",
+  "sources": {
+    "background": {
+      "maxzoom": 19,
+      "tileSize": 256,
+      "tiles": [
+        "https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+      ],
+      "type": "raster"
+    }
+  },
+  "sprite": "",
+  "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
+  "layers": [
+    {
+      "id": "background",
+      "type": "raster",
+      "source": "background",
+      "maxzoom": 20,
+      "paint": {
+        "raster-opacity": {
+          "base": 1.5,
+          "stops": [
+            [
+              0,
+              0.6
+            ],
+            [
+              6,
+              0.6
+            ]
+          ]
+        }
+      }
+    }
+  ]
+}
