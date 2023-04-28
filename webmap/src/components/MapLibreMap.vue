@@ -79,9 +79,19 @@ const setFilter = (
   throttle(() => map?.setFilter(layerId, filter, options), layerId, 100)
 }
 
+const queryFeatures = (filter: any[]) => {
+  return map?.querySourceFeatures('pneuma', { sourceLayer: 'data', filter, validate: false })
+}
+
+const onZoom = (callback: () => void) => {
+  map?.on('zoom', callback)
+}
+
 defineExpose({
   update,
-  setFilter
+  setFilter,
+  queryFeatures,
+  onZoom
 })
 
 watch(

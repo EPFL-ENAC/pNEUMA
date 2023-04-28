@@ -5,22 +5,16 @@
     "lng": 6.5647337
   },
   "zoom": 8,
-  "permanentLayerIds": [
-    "background"
-  ],
+  "permanentLayerIds": ["background"],
   "selectableItems": [
     {
       "label": "None #1",
-      "ids": [
-        ""
-      ],
+      "ids": [""],
       "selected": false
     },
     {
       "label": "None #2",
-      "ids": [
-        ""
-      ],
+      "ids": [""],
       "selected": false
     }
   ]

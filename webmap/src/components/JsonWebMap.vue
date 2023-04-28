@@ -59,47 +59,47 @@ watch(
   { immediate: true }
 )
 
+const getRangeFilter = (
+  name: string,
+  range: [number, number] | number[]
+): ExpressionSpecification[] => [
+  ['>=', ['get', name], range[0]],
+  ['<=', ['get', name], range[1]]
+]
+
 const getIdsFilter = (): ExpressionSpecification[] => {
   if (filterSingleVehicle.value) return [['==', ['get', 'track_id'], vehicleId.value]]
-  else
-    return [
-      ['>=', ['get', 'track_id'], vehiclesIds.value[0]],
-      ['<=', ['get', 'track_id'], vehiclesIds.value[1]]
-    ]
-}
-const getTimeFilter = (): ExpressionSpecification[] => {
-  return [
-    ['>=', ['get', 'time'], timeRange.value[0]],
-    ['<=', ['get', 'time'], timeRange.value[1]]
-  ]
-}
-
-const getSpeedFilter = (): ExpressionSpecification[] => {
-  return [
-    ['>=', ['get', 'speed'], speedRange.value[0]],
-    ['<=', ['get', 'speed'], speedRange.value[1]]
-  ]
+  else return getRangeFilter('track_id', vehiclesIds.value)
 }
 
 const getTypeFilter = (): ExpressionSpecification => {
   return ['in', ['get', 'type'], ['literal', selectedTypes.value as ExpressionSpecification]]
 }
+
 const getFilter = (): ExpressionSpecification => {
   const filter: ExpressionSpecification = [
     'all',
     ...getIdsFilter(),
-    ...getTimeFilter(),
+    ...getRangeFilter('time', timeRange.value),
     getTypeFilter(),
-    ...getSpeedFilter()
+    ...getRangeFilter('speed', speedRange.value)
   ]
-  console.log(filter)
   return filter
 }
 
 watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selectedTypes], () => {
   map.value?.setFilter('vehicles', getFilter())
   map.value?.setFilter('heatmap', getFilter())
+  console.log(map.value?.queryFeatures(getFilter()))
 })
+
+const debounce = (fn: Function, ms = 300) => {
+  let timeoutId: ReturnType<typeof setTimeout>
+  return function (this: any, ...args: any[]) {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => fn.apply(this, args), ms)
+  }
+}
 </script>
 
 <template>
@@ -124,7 +124,7 @@ watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selec
                   hide-details
                   :min="0"
                   :max="500"
-                  step="5"
+                  step="1"
                   strict
                   density="compact"
                   thumb-label
@@ -135,7 +135,7 @@ watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selec
                   hide-details
                   :min="0"
                   :max="500"
-                  step="5"
+                  step="1"
                   strict
                   density="compact"
                   thumb-label
@@ -150,7 +150,7 @@ watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selec
                   hide-details
                   :min="0"
                   :max="1000"
-                  step="5"
+                  step="1"
                   strict
                   density="compact"
                   thumb-label
