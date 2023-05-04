@@ -2,6 +2,7 @@
 import LayerSelector from '@/components/LayerSelector.vue'
 import MapLibreMap from '@/components/MapLibreMap.vue'
 import type { Parameters } from '@/utils/jsonWebMap'
+import type { SelectableSingleItem } from '@/utils/layerSelector'
 import axios from 'axios'
 import type { ExpressionSpecification } from 'maplibre-gl'
 import { computed, ref, shallowRef, triggerRef, watch } from 'vue'
@@ -12,12 +13,21 @@ const props = defineProps<{
 }>()
 
 const map = ref<InstanceType<typeof MapLibreMap>>()
-const selectedlayerIds = ref<string[]>([])
+
 const parameters = shallowRef<Parameters>({})
+const selectedLayerIds = ref<string[]>([
+  ...(parameters.value?.selectableItems?.flatMap((selectableItem) => {
+    if (selectableItem.selected && Object.hasOwn(selectableItem, 'ids')) {
+      const selectableSingleItem = selectableItem as SelectableSingleItem
+      return selectableSingleItem.ids
+    }
+    return []
+  }) ?? [])
+])
 
 const filterIds = computed<string[]>(() => [
   ...(parameters.value.permanentLayerIds ?? []),
-  ...selectedlayerIds.value
+  ...selectedLayerIds.value
 ])
 
 const filterSingleVehicle = ref<boolean>(false)
@@ -108,7 +118,7 @@ const debounce = (fn: Function, ms = 300) => {
       <v-col cols="12" md="3" sm="6" class="pl-6">
         <v-row>
           <v-col>
-            <LayerSelector v-model="selectedlayerIds" :items="parameters.selectableItems" />
+            <LayerSelector v-model="selectedLayerIds" :items="parameters.selectableItems" />
             <v-card>
               <v-card-title> Vehicle IDs </v-card-title>
               <v-card-text>
