@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import geopandas as gpd
 from geopandas import GeoDataFrame
 from shapely.geometry import Point
@@ -25,25 +26,37 @@ def to_point(df: pd.DataFrame,
     # Convert the DataFrame to a GeoDataFrame
     return GeoDataFrame(df, geometry=geometry)
 
-def to_line(gdf: GeoDataFrame|str) -> GeoDataFrame:
+
+def progression(df: pd.DataFrame) -> pd.DataFrame:
+
+    length = [len(df[df["track_id"] == id]) for id in set(df.track_id)]
+    array = [i/num for num in length for i in range(1, num+1)]
+
+    df['progression'] = array
+
+    return df
+
+
+def to_line(gdf: GeoDataFrame | str) -> GeoDataFrame:
     """
     TODO DocString
     """
 
     if type(gdf) == str:
         gdf = gpd.read_file(gdf)
-    
+
     gdf = gdf.sort_values(['track_id', 'type', 'time'])
 
     # Group the data by 'id' and create LineStrings
-    gdf_grouped = gdf.groupby('track_id')['geometry'].apply(lambda x: LineString(x.tolist()))
+    gdf_grouped = gdf.groupby('track_id')['geometry'].apply(
+        lambda x: LineString(x.tolist()))
     gdf_grouped = gpd.GeoDataFrame(gdf_grouped, geometry='geometry')
 
     # Convert the DataFrame to a GeoDataFrame
     return gdf_grouped
 
 
-def save(gdf: GeoDataFrame, name: str, in_folder: bool = True, type:str="point"):
+def save(gdf: GeoDataFrame, name: str, in_folder: bool = True, type: str = "point"):
     """
     TODO DocString
     """

@@ -26,13 +26,15 @@ def main(argv):
     fixed = FLAGS.fixed
     variable = FLAGS.variable
 
-    refacted = refactor.Refactor(file=file_name)
+    # refacted = refactor.Refactor(file=file_name)
 
-    refacted.all(fixed=fixed, variable=variable,
-                 size=size)
+    # refacted.all(fixed=fixed, variable=variable,
+    #              size=size)
 
     # 8 min 65 sec to perform the below for 2478 track_id
     df = pd.read_csv(f"data/output/{file_name}_{size}.csv")
+
+    df = geospatial.progression(df)
 
     gdf = geospatial.to_point(df=df)
     geospatial.save(gdf=gdf, type="point", name=f"{file_name}_{size}")
