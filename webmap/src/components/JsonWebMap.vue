@@ -17,7 +17,7 @@ const map = ref<InstanceType<typeof MapLibreMap>>()
 const parameters = shallowRef<Parameters>({})
 const selectedLayerIds = ref<string[]>([
   ...(parameters.value?.selectableItems?.flatMap((selectableItem) => {
-    if (selectableItem.selected && Object.hasOwn(selectableItem, 'ids')) {
+    if (selectableItem.selected && 'ids' in selectableItem) {
       const selectableSingleItem = selectableItem as SelectableSingleItem
       return selectableSingleItem.ids
     }
@@ -254,7 +254,7 @@ const debounce = (fn: Function, ms = 300) => {
                   thumb-label="always"
                   label="Time range center"
                 >
-                  <template #thumb-label="">
+                  <template #thumb-label>
                     <span class="thumb-label-nowrap">{{ preciseTimeRange }} </span>
                   </template>
                 </v-slider>
