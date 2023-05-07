@@ -11,7 +11,7 @@
     "background": {
       "maxzoom": 20,
       "tileSize": 256,
-      "tiles": ["https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}@2x.png"],
+      "tiles": ["https://tile.osm.ch/switzerland/{z}/{x}/{y}.png"],
       "type": "raster"
     }
   },
@@ -24,13 +24,9 @@
       "source": "background",
       "maxzoom": 24,
       "paint": {
-        "raster-opacity": {
-          "base": 1.5,
-          "stops": [
-            [0, 0.6],
-            [6, 0.6]
-          ]
-        }
+        "raster-opacity": 1,
+        "raster-saturation": -0.8,
+        "raster-brightness-min": 0.6
       }
     },
     {
