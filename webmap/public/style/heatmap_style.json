@@ -4,7 +4,7 @@
   "sources": {
     "pneuma": {
       "type": "vector",
-      "tiles": ["https://enacit4r-cdn.epfl.ch/pneuma/2023-04-24/tiles/{z}/{x}/{y}.pbf"],
+      "tiles": ["https://enacit4r-cdn.epfl.ch/pneuma/2023-05-05T135444Z/tiles/{z}/{x}/{y}.pbf"],
       "minZoom": 16,
       "maxZoom": 24
     },

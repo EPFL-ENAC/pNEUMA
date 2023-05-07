@@ -31,6 +31,8 @@ const filterIds = computed<string[]>(() => [
   ...(filterSingleVehicle.value ? ['ghost'] : [])
 ])
 
+const colorByProgression = ref<boolean>(false)
+
 const filterSingleVehicle = ref<boolean>(false)
 const usePreciseTimeRange = ref<boolean>(false)
 const vehiclesIds = ref<number[]>([0, 400])
@@ -140,6 +142,33 @@ watch(
   }
 )
 
+watch(colorByProgression, (colorByProgression) => {
+  if (colorByProgression)
+    map.value?.setPaintProperty('vehicles', 'circle-color', [
+      'interpolate-hcl',
+      ['linear'],
+      ['to-number', ['get', 'progression']],
+      0,
+      'green',
+      0.5,
+      'yellow',
+      1,
+      'red'
+    ])
+  else
+    map.value?.setPaintProperty('vehicles', 'circle-color', [
+      'interpolate-hcl',
+      ['linear'],
+      ['to-number', ['get', 'speed']],
+      0,
+      'red',
+      10,
+      'yellow',
+      50,
+      'green'
+    ])
+})
+
 watch(timeRange, (timeRange) => {
   preciseTimeRange.value[0] = Math.max(preciseTimeRange.value[0], timeRange[0])
   preciseTimeRange.value[1] = Math.min(preciseTimeRange.value[1], timeRange[1])
@@ -241,6 +270,17 @@ const debounce = (fn: Function, ms = 300) => {
                   label="Time range size"
                   thumb-label
                 ></v-slider>
+              </v-card-text>
+            </v-card>
+            <v-card>
+              <v-card-title> Color </v-card-title>
+              <v-card-text>
+                <v-checkbox
+                  v-model="colorByProgression"
+                  density="compact"
+                  hide-details
+                  label="Encode progression instead of speed"
+                />
               </v-card-text>
             </v-card>
             <v-card>
