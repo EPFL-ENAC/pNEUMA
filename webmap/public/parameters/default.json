@@ -9,7 +9,7 @@
   "selectableItems": [
     {
       "label": "Vehicles",
-      "ids": ["vehicles", "single"],
+      "ids": ["vehicles"],
       "selected": true
     },
     {

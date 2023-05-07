@@ -25,9 +25,12 @@ const selectedLayerIds = ref<string[]>([
   }) ?? [])
 ])
 
+watch(selectedLayerIds, (newValues) => console.log(newValues))
+
 const filterIds = computed<string[]>(() => [
   ...(parameters.value.permanentLayerIds ?? []),
-  ...selectedLayerIds.value
+  ...selectedLayerIds.value,
+  ...(filterSingleVehicle.value ? ['ghost'] : [])
 ])
 
 const filterSingleVehicle = ref<boolean>(false)
@@ -54,7 +57,7 @@ const timeRangeSize = computed({
 })
 
 const speedRange = ref<number[]>([0, 100])
-const vehicleId = ref<number>(0)
+const vehicleId = ref<number>(1)
 const vehicleTypes = ['Taxi', 'Bus', 'Heavy Vehicle', 'Medium Vehicle', 'Motorcycle', 'Car']
 const selectedTypes = ref<string[]>(vehicleTypes)
 
@@ -117,11 +120,24 @@ const getFilter = (): ExpressionSpecification => {
   return filter
 }
 
-watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selectedTypes], () => {
-  if (filterIds.value.includes('vehicles')) map.value?.setFilter('vehicles', getFilter())
-  if (filterIds.value.includes('heatmap')) map.value?.setFilter('heatmap', getFilter())
-  // console.log(map.value?.queryFeatures(getFilter()))
-})
+watch(
+  [
+    vehiclesIds,
+    filterSingleVehicle,
+    vehicleId,
+    timeRange,
+    timeRangeMiddle,
+    timeRangeSize,
+    speedRange,
+    selectedTypes
+  ],
+  () => {
+    map.value?.setFilter('vehicles', getFilter())
+    map.value?.setFilter('ghost', ['all', ...getIdsFilter()])
+    map.value?.setFilter('heatmap', getFilter())
+    // console.log(map.value?.queryFeatures(getFilter()))
+  }
+)
 
 watch(fixedTimeRange, (fixedTimeRange) => {
   if (fixedTimeRange) {
@@ -158,7 +174,7 @@ const debounce = (fn: Function, ms = 300) => {
                   v-if="!filterSingleVehicle"
                   v-model="vehiclesIds"
                   hide-details
-                  :min="0"
+                  :min="1"
                   :max="500"
                   step="1"
                   strict

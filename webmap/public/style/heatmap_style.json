@@ -39,6 +39,9 @@
       "source": "pneuma",
       "source-layer": "data",
       "maxzoom": 24,
+      "layout": {
+        "visibility": "none"
+      },
       "paint": {
         "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 17, 0.2, 24, 2],
         "heatmap-color": [
@@ -62,6 +65,20 @@
       }
     },
     {
+      "id": "ghost",
+      "type": "circle",
+      "source": "pneuma",
+      "source-layer": "data",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "circle-color": "grey",
+        "circle-opacity": 0.3,
+        "circle-stroke-color": "transparent"
+      }
+    },
+    {
       "id": "vehicles",
       "type": "circle",
       "source": "pneuma",
@@ -81,19 +98,6 @@
           50,
           "green"
         ],
-        "circle-opacity": 0.7,
-        "circle-stroke-color": "rgba(0,0,0,0.2)"
-      }
-    },
-    {
-      "id": "single",
-      "type": "circle",
-      "source": "pneuma",
-      "source-layer": "data",
-      "layout": {
-        "visibility": "none"
-      },
-      "paint": {
         "circle-opacity": 0.7,
         "circle-stroke-color": "rgba(0,0,0,0.2)"
       }

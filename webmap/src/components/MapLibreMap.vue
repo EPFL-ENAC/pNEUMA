@@ -54,6 +54,8 @@ onMounted(() => {
   map.addControl(new ScaleControl({}))
   map.addControl(new FullscreenControl({}))
 
+  filterLayers(props.filterIds)
+
   map.once('load', () => {
     filterLayers(props.filterIds)
   })
@@ -134,7 +136,9 @@ watch(
 )
 watch(
   () => props.filterIds,
-  (filterIds) => filterLayers(filterIds),
+  (filterIds) => {
+    filterLayers(filterIds)
+  },
   { immediate: true }
 )
 
@@ -148,9 +152,9 @@ function update(center?: LngLatLike, zoom?: number) {
 }
 
 function filterLayers(filterIds?: string[]) {
-  if (filterIds) {
+  if (filterIds && map !== undefined && map.isStyleLoaded()) {
     map
-      ?.getStyle()
+      .getStyle()
       .layers.filter((layer) => !layer.id.startsWith('gl-draw'))
       .forEach((layer) => {
         map?.setLayoutProperty(
