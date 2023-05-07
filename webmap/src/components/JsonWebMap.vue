@@ -31,8 +31,28 @@ const filterIds = computed<string[]>(() => [
 ])
 
 const filterSingleVehicle = ref<boolean>(false)
+const fixedTimeRange = ref<boolean>(false)
 const vehiclesIds = ref<number[]>([0, 400])
 const timeRange = ref<number[]>([0, 1000])
+const timeRangeMiddle = computed({
+  get() {
+    return timeRange.value[0] + ~~((timeRange.value[1] - timeRange.value[0]) / 2)
+  },
+  set(newValue) {
+    const halfSize = ~~(timeRangeSize.value / 2)
+    timeRange.value[0] = newValue - halfSize
+    timeRange.value[1] = newValue + halfSize
+  }
+})
+const timeRangeSize = computed({
+  get() {
+    return timeRange.value[1] - timeRange.value[0]
+  },
+  set(newValue) {
+    timeRange.value[1] = timeRange.value[0] + newValue
+  }
+})
+
 const speedRange = ref<number[]>([0, 100])
 const vehicleId = ref<number>(0)
 const vehicleTypes = ['Taxi', 'Bus', 'Heavy Vehicle', 'Medium Vehicle', 'Motorcycle', 'Car']
@@ -98,9 +118,15 @@ const getFilter = (): ExpressionSpecification => {
 }
 
 watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selectedTypes], () => {
-  map.value?.setFilter('vehicles', getFilter())
-  map.value?.setFilter('heatmap', getFilter())
-  console.log(map.value?.queryFeatures(getFilter()))
+  if (filterIds.value.includes('vehicles')) map.value?.setFilter('vehicles', getFilter())
+  if (filterIds.value.includes('heatmap')) map.value?.setFilter('heatmap', getFilter())
+  // console.log(map.value?.queryFeatures(getFilter()))
+})
+
+watch(fixedTimeRange, (fixedTimeRange) => {
+  if (fixedTimeRange) {
+    timeRangeSize.value = Math.min(timeRangeSize.value, 50)
+  }
 })
 
 const debounce = (fn: Function, ms = 300) => {
@@ -155,12 +181,49 @@ const debounce = (fn: Function, ms = 300) => {
             <v-card>
               <v-card-title> Time range in seconds </v-card-title>
               <v-card-text>
+                <v-checkbox
+                  v-model="fixedTimeRange"
+                  density="compact"
+                  hide-details
+                  label="Use fixed time range"
+                />
+                <v-slider
+                  v-if="fixedTimeRange"
+                  v-model="timeRangeMiddle"
+                  hide-details
+                  :min="0"
+                  :max="1000"
+                  :step="1"
+                  strict
+                  thumb-label="always"
+                  label="Time range center"
+                >
+                  <template #thumb-label="">
+                    <span class="thumb-label-nowrap">
+                      [ {{ timeRangeMiddle - timeRangeSize }} ,
+                      {{ timeRangeMiddle + timeRangeSize }} ]
+                    </span>
+                  </template>
+                </v-slider>
+                <v-slider
+                  v-if="fixedTimeRange"
+                  v-model="timeRangeSize"
+                  hide-details
+                  :min="0"
+                  :max="50"
+                  :step="1"
+                  strict
+                  density="compact"
+                  label="Time range size"
+                  thumb-label
+                ></v-slider>
                 <v-range-slider
+                  v-if="!fixedTimeRange"
                   v-model="timeRange"
                   hide-details
                   :min="0"
                   :max="1000"
-                  step="1"
+                  :step="1"
                   strict
                   density="compact"
                   thumb-label
@@ -228,3 +291,9 @@ const debounce = (fn: Function, ms = 300) => {
     </v-row>
   </v-container>
 </template>
+
+<style>
+.v-slider-thumb__label span.thumb-label-nowrap {
+  white-space: nowrap;
+}
+</style>
