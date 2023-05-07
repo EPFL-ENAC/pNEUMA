@@ -25,8 +25,6 @@ const selectedLayerIds = ref<string[]>([
   }) ?? [])
 ])
 
-watch(selectedLayerIds, (newValues) => console.log(newValues))
-
 const filterIds = computed<string[]>(() => [
   ...(parameters.value.permanentLayerIds ?? []),
   ...selectedLayerIds.value,
@@ -34,25 +32,28 @@ const filterIds = computed<string[]>(() => [
 ])
 
 const filterSingleVehicle = ref<boolean>(false)
-const fixedTimeRange = ref<boolean>(false)
+const usePreciseTimeRange = ref<boolean>(false)
 const vehiclesIds = ref<number[]>([0, 400])
 const timeRange = ref<number[]>([0, 1000])
-const timeRangeMiddle = computed({
+const preciseTimeRange = ref<number[]>([0, 100])
+
+const preciseTimeRangeSize = computed({
   get() {
-    return timeRange.value[0] + ~~((timeRange.value[1] - timeRange.value[0]) / 2)
+    return preciseTimeRange.value[1] - preciseTimeRange.value[0]
   },
   set(newValue) {
-    const halfSize = ~~(timeRangeSize.value / 2)
-    timeRange.value[0] = newValue - halfSize
-    timeRange.value[1] = newValue + halfSize
+    preciseTimeRange.value[1] = preciseTimeRange.value[0] + newValue
   }
 })
-const timeRangeSize = computed({
+
+const preciseTimeRangeMiddle = computed({
   get() {
-    return timeRange.value[1] - timeRange.value[0]
+    return preciseTimeRange.value[0] + ~~(preciseTimeRangeSize.value / 2)
   },
   set(newValue) {
-    timeRange.value[1] = timeRange.value[0] + newValue
+    const halfSize = ~~(preciseTimeRangeSize.value / 2)
+    preciseTimeRange.value[0] = newValue - halfSize
+    preciseTimeRange.value[1] = newValue + halfSize
   }
 })
 
@@ -112,9 +113,10 @@ const getTypeFilter = (): ExpressionSpecification => {
 const getFilter = (): ExpressionSpecification => {
   const filter: ExpressionSpecification = [
     'all',
+    getTypeFilter(),
     ...getIdsFilter(),
     ...getRangeFilter('time', timeRange.value),
-    getTypeFilter(),
+    ...(usePreciseTimeRange.value ? getRangeFilter('time', preciseTimeRange.value) : []),
     ...getRangeFilter('speed', speedRange.value)
   ]
   return filter
@@ -126,8 +128,8 @@ watch(
     filterSingleVehicle,
     vehicleId,
     timeRange,
-    timeRangeMiddle,
-    timeRangeSize,
+    preciseTimeRangeMiddle,
+    preciseTimeRangeSize,
     speedRange,
     selectedTypes
   ],
@@ -135,14 +137,12 @@ watch(
     map.value?.setFilter('vehicles', getFilter())
     map.value?.setFilter('ghost', ['all', ...getIdsFilter()])
     map.value?.setFilter('heatmap', getFilter())
-    // console.log(map.value?.queryFeatures(getFilter()))
   }
 )
 
-watch(fixedTimeRange, (fixedTimeRange) => {
-  if (fixedTimeRange) {
-    timeRangeSize.value = Math.min(timeRangeSize.value, 50)
-  }
+watch(timeRange, (timeRange) => {
+  preciseTimeRange.value[0] = Math.max(preciseTimeRange.value[0], timeRange[0])
+  preciseTimeRange.value[1] = Math.min(preciseTimeRange.value[1], timeRange[1])
 })
 
 const debounce = (fn: Function, ms = 300) => {
@@ -197,44 +197,7 @@ const debounce = (fn: Function, ms = 300) => {
             <v-card>
               <v-card-title> Time range in seconds </v-card-title>
               <v-card-text>
-                <v-checkbox
-                  v-model="fixedTimeRange"
-                  density="compact"
-                  hide-details
-                  label="Use fixed time range"
-                />
-                <v-slider
-                  v-if="fixedTimeRange"
-                  v-model="timeRangeMiddle"
-                  hide-details
-                  :min="0"
-                  :max="1000"
-                  :step="1"
-                  strict
-                  thumb-label="always"
-                  label="Time range center"
-                >
-                  <template #thumb-label="">
-                    <span class="thumb-label-nowrap">
-                      [ {{ timeRangeMiddle - timeRangeSize }} ,
-                      {{ timeRangeMiddle + timeRangeSize }} ]
-                    </span>
-                  </template>
-                </v-slider>
-                <v-slider
-                  v-if="fixedTimeRange"
-                  v-model="timeRangeSize"
-                  hide-details
-                  :min="0"
-                  :max="50"
-                  :step="1"
-                  strict
-                  density="compact"
-                  label="Time range size"
-                  thumb-label
-                ></v-slider>
                 <v-range-slider
-                  v-if="!fixedTimeRange"
                   v-model="timeRange"
                   hide-details
                   :min="0"
@@ -242,8 +205,42 @@ const debounce = (fn: Function, ms = 300) => {
                   :step="1"
                   strict
                   density="compact"
+                  label="Time range"
                   thumb-label
                 ></v-range-slider>
+                <v-checkbox
+                  v-model="usePreciseTimeRange"
+                  density="compact"
+                  hide-details
+                  label="Use fixed time range"
+                />
+                <v-slider
+                  v-if="usePreciseTimeRange"
+                  v-model="preciseTimeRangeMiddle"
+                  hide-details
+                  :min="timeRange[0] + preciseTimeRangeSize"
+                  :max="timeRange[1] - preciseTimeRangeSize"
+                  :step="1"
+                  strict
+                  thumb-label="always"
+                  label="Time range center"
+                >
+                  <template #thumb-label="">
+                    <span class="thumb-label-nowrap">{{ preciseTimeRange }} </span>
+                  </template>
+                </v-slider>
+                <v-slider
+                  v-if="usePreciseTimeRange"
+                  v-model="preciseTimeRangeSize"
+                  hide-details
+                  :min="1"
+                  :max="Math.min(50, timeRange[1] - timeRange[0])"
+                  :step="1"
+                  strict
+                  density="compact"
+                  label="Time range size"
+                  thumb-label
+                ></v-slider>
               </v-card-text>
             </v-card>
             <v-card>
