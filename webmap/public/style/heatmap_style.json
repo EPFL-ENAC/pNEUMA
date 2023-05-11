@@ -13,9 +13,13 @@
       "tileSize": 256,
       "tiles": ["https://tile.osm.ch/switzerland/{z}/{x}/{y}.png"],
       "type": "raster"
+    },
+    "osm": {
+      "type": "geojson",
+      "data": "https://enacit4r-cdn.epfl.ch/pneuma/data_osm.geojson"
     }
   },
-  "sprite": "",
+  "sprite": "https://enacit4r-cdn.epfl.ch/pneuma/sprites/sprite",
   "glyphs": "https://orangemug.github.io/font-glyphs/glyphs/{fontstack}/{range}.pbf",
   "layers": [
     {
@@ -96,6 +100,27 @@
         ],
         "circle-opacity": 0.7,
         "circle-stroke-color": "rgba(0,0,0,0.2)"
+      }
+    },
+    {
+      "id": "traffic_signals",
+      "type": "symbol",
+      "source": "osm",
+      "minzoom": 16,
+      "filter": ["==", ["get", "highway"], "traffic_signals"],
+      "layout": {
+        "icon-image": "Traffic_light-16"
+      }
+    },
+    {
+      "id": "bus_stops",
+      "type": "symbol",
+      "source": "osm",
+      "minzoom": 16,
+      "filter": ["==", ["get", "highway"], "bus_stop"],
+      "layout": {
+        "icon-image": "Bus-stop-12",
+        "icon-size": 1.5
       }
     }
   ]

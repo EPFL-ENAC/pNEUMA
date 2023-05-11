@@ -16,6 +16,11 @@
       "label": "Heatmap",
       "ids": ["heatmap"],
       "selected": false
+    },
+    {
+      "label": "OpenStreetMap Traffic",
+      "ids": ["traffic_signals", "bus_stops"],
+      "selected": true
     }
   ]
 }
