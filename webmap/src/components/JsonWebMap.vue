@@ -136,9 +136,10 @@ watch(
     selectedTypes
   ],
   () => {
-    map.value?.setFilter('vehicles', getFilter())
-    map.value?.setFilter('ghost', ['all', ...getIdsFilter()])
-    map.value?.setFilter('heatmap', getFilter())
+    console.log(filterIds.value)
+    if (filterIds.value.includes('vehicles')) map.value?.setFilter('vehicles', getFilter())
+    if (filterIds.value.includes('ghost')) map.value?.setFilter('ghost', ['all', ...getIdsFilter()])
+    if (filterIds.value.includes('heatmap')) map.value?.setFilter('heatmap', getFilter())
   }
 )
 

@@ -4,9 +4,7 @@
   "sources": {
     "pneuma": {
       "type": "vector",
-      "tiles": ["https://enacit4r-cdn.epfl.ch/pneuma/2023-05-05T135444Z/tiles/{z}/{x}/{y}.pbf"],
-      "minZoom": 16,
-      "maxZoom": 24
+      "tiles": ["https://enacit4r-cdn.epfl.ch/pneuma/2023-05-11T1614/{z}/{x}/{y}.pbf"]
     },
     "background": {
       "maxzoom": 20,
@@ -37,7 +35,7 @@
       "id": "heatmap",
       "type": "heatmap",
       "source": "pneuma",
-      "source-layer": "data",
+      "source-layer": "NotSampled",
       "maxzoom": 24,
       "layout": {
         "visibility": "none"
@@ -68,7 +66,7 @@
       "id": "ghost",
       "type": "circle",
       "source": "pneuma",
-      "source-layer": "data",
+      "source-layer": "NotSampled",
       "layout": {
         "visibility": "none"
       },
@@ -82,7 +80,7 @@
       "id": "vehicles",
       "type": "circle",
       "source": "pneuma",
-      "source-layer": "data",
+      "source-layer": "NotSampled",
       "layout": {
         "visibility": "visible"
       },
