@@ -248,8 +248,8 @@ const debounce = (fn: Function, ms = 300) => {
                   v-if="usePreciseTimeRange"
                   v-model="preciseTimeRangeMiddle"
                   hide-details
-                  :min="timeRange[0] + preciseTimeRangeSize"
-                  :max="timeRange[1] - preciseTimeRangeSize"
+                  :min="timeRange[0] + ~~(preciseTimeRangeSize / 2)"
+                  :max="timeRange[1] - ~~(preciseTimeRangeSize / 2)"
                   :step="1"
                   strict
                   thumb-label="always"
