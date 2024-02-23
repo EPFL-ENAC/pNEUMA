@@ -54,10 +54,10 @@ onMounted(() => {
   map.addControl(new ScaleControl({}))
   map.addControl(new FullscreenControl({}))
 
-  filterLayers(props.filterIds)
+  // filterLayers(props.filterIds)
 
   map.once('load', () => {
-    filterLayers(props.filterIds)
+    // filterLayers(props.filterIds)
   })
   loading.value = false
 })
@@ -91,7 +91,11 @@ const setPaintProperty = (
 }
 
 const queryFeatures = (filter: any[]) => {
-  return map?.querySourceFeatures('pneuma', { sourceLayer: 'data', filter, validate: false })
+  return map?.querySourceFeatures('pneuma', {
+    sourceLayer: 'trajectories',
+    filter,
+    validate: false
+  })
 }
 
 const onZoom = (callback: () => void) => {

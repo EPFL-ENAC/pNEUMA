@@ -35,7 +35,7 @@ const colorByProgression = ref<boolean>(false)
 
 const filterSingleVehicle = ref<boolean>(false)
 const usePreciseTimeRange = ref<boolean>(false)
-const vehiclesIds = ref<number[]>([0, 400])
+const vehiclesIds = ref<number[]>([0, 10000])
 const timeRange = ref<number[]>([0, 1000])
 const preciseTimeRange = ref<number[]>([0, 100])
 
@@ -104,12 +104,16 @@ const getRangeFilter = (
 ]
 
 const getIdsFilter = (): ExpressionSpecification[] => {
-  if (filterSingleVehicle.value) return [['==', ['get', 'track_id'], vehicleId.value]]
-  else return getRangeFilter('track_id', vehiclesIds.value)
+  if (filterSingleVehicle.value) return [['==', ['get', 'id'], vehicleId.value]]
+  else return getRangeFilter('id', vehiclesIds.value)
 }
 
 const getTypeFilter = (): ExpressionSpecification => {
-  return ['in', ['get', 'type'], ['literal', selectedTypes.value as ExpressionSpecification]]
+  return [
+    'in',
+    ['get', 'vehicle_type'],
+    ['literal', selectedTypes.value as ExpressionSpecification]
+  ]
 }
 
 const getFilter = (): ExpressionSpecification => {
@@ -117,9 +121,9 @@ const getFilter = (): ExpressionSpecification => {
     'all',
     getTypeFilter(),
     ...getIdsFilter(),
-    ...getRangeFilter('time', timeRange.value),
-    ...(usePreciseTimeRange.value ? getRangeFilter('time', preciseTimeRange.value) : []),
-    ...getRangeFilter('speed', speedRange.value)
+    ...getRangeFilter('trajectory_start_time', timeRange.value)
+    // ...(usePreciseTimeRange.value ? getRangeFilter('time', preciseTimeRange.value) : []),
+    // ...getRangeFilter('speed', speedRange.value)
   ]
   return filter
 }
@@ -144,29 +148,35 @@ watch(
 )
 
 watch(colorByProgression, (colorByProgression) => {
-  if (colorByProgression)
-    map.value?.setPaintProperty('vehicles', 'circle-color', [
-      'interpolate-hcl',
-      ['linear'],
-      ['to-number', ['get', 'progression']],
-      0,
-      'green',
-      0.5,
-      'yellow',
-      1,
-      'red'
+  if (!colorByProgression)
+    map.value?.setPaintProperty('vehicles', 'line-color', [
+      'match',
+      ['get', 'vehicle_type'],
+      'Taxi',
+      '#ff8c00',
+      'Bus',
+      '#ff0000',
+      'Heavy Vehicle',
+      '#483d8b',
+      'Medium Vehicle',
+      '#32cd32',
+      'Motorcycle',
+      '#ff69b4',
+      'Car',
+      '#007cbf',
+      '#000000'
     ])
   else
-    map.value?.setPaintProperty('vehicles', 'circle-color', [
-      'interpolate-hcl',
+    map.value?.setPaintProperty('vehicles', 'line-color', [
+      'interpolate',
       ['linear'],
-      ['to-number', ['get', 'speed']],
+      ['to-number', ['get', 'avg_speed']],
       0,
-      'red',
-      10,
-      'yellow',
-      50,
-      'green'
+      '#00ff00',
+      30,
+      '#ffff00',
+      60,
+      '#ff0000'
     ])
 })
 
@@ -205,8 +215,8 @@ const debounce = (fn: Function, ms = 300) => {
                   v-model="vehiclesIds"
                   hide-details
                   :min="1"
-                  :max="500"
-                  step="1"
+                  :max="10000"
+                  step="10"
                   strict
                   density="compact"
                   thumb-label
@@ -216,7 +226,7 @@ const debounce = (fn: Function, ms = 300) => {
                   v-model="vehicleId"
                   hide-details
                   :min="0"
-                  :max="500"
+                  :max="10000"
                   step="1"
                   strict
                   density="compact"
@@ -231,7 +241,7 @@ const debounce = (fn: Function, ms = 300) => {
                   v-model="timeRange"
                   hide-details
                   :min="0"
-                  :max="1000"
+                  :max="800"
                   :step="1"
                   strict
                   density="compact"
