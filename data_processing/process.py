@@ -4,11 +4,17 @@ import time
 import os
 import re 
 import csv
+import pandas as pd
+import geopandas as gpd
+import movingpandas as mpd
+
+mpd.show_versions()
+
 
 chunk_size = 10  # Adjust this based on your system's memory capacity
 sampling_interval = 0.5  # Change this value for different sampling, it's in seconds
 
-use_linestring = True # If true, the output will be a linestring, otherwise it will be multiples points
+use_linestring = False # If true, the output will be a linestring, otherwise it will be multiples points
 
 ## USAGE python process.py ../data/inputs/20181024_dX_0830_0900.csv 
 
@@ -32,14 +38,14 @@ def process_chunk(chunk_data, chunk_index, output_dir):
             trajectory_end_time = None
             for i in range(0, len(data_points), 6):
                 try:
-                    lat, lon, speed, _, _, timestamp = data_points[i:i+6]
+                    lat, lon, speed, lon_acc, lat_acc, timestamp = data_points[i:i+6]
                     timestamp = float(timestamp)
                     speed = float(speed)
                     if last_included_timestamp is None :
                         trajectory_start_time = timestamp
                     if last_included_timestamp is None or timestamp - last_included_timestamp >= sampling_interval:
                         if not use_linestring : 
-                            processed_data.append([track_id, vehicle_type,lat, lon, speed, timestamp])
+                            processed_data.append([track_id, vehicle_type,lat, lon, speed,lon_acc,lat_acc, timestamp])
                         else :
                             trajectory.append(f"{lon} {lat}")     
                         last_included_timestamp = timestamp
@@ -67,7 +73,7 @@ def concatenate_files(output_file, output_dir):
 
     with open(output_file, 'w', newline='') as f_out:
         if not use_linestring :
-            f_out.write('id,vehicle_type,lat,lon,speed,timestamp\n')  # Write headers here
+            f_out.write('id,vehicle_type,lat,lon,speed,lon_acc,lat_acc,timestamp\n')  # Write headers here
         else : 
             f_out.write('id,vehicle_type,traveled_d,avg_speed,trajectory_start_time,trajectory_end_time,trajectory\n')
         for filename in sorted(os.listdir(output_dir), key=sort_key):
