@@ -6,5 +6,8 @@
   },
   "scripts": {
     "prepare": "husky install"
+  },
+  "dependencies": {
+    "@mapbox/spritezero": "^8.0.2"
   }
 }
