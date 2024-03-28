@@ -58,6 +58,26 @@ onMounted(() => {
 
   map.once('load', () => {
     // filterLayers(props.filterIds)
+
+    map?.on('mousemove', function (e) {
+      if (map) {
+        const features = map.queryRenderedFeatures(e.point)
+        const ids = features.map((feat: any) => feat.properties.id)
+        // Update the filter for the 'points' layer.
+        // This will display only the features whose ids are under the mouse.
+        // We use the 'in' expression to match any of the ids.
+        if (ids.length > 0) {
+          const filter: FilterSpecification = ['==', ['get', 'id'], ids[0]]
+          map.setFilter('points', filter)
+          map.setLayoutProperty('points', 'visibility', 'visible')
+        } else {
+          // If no features are found under the mouse, reset the filter
+          // This is important to ensure that previously filtered points are not stuck on the map
+          map.setFilter('points', null)
+          map.setLayoutProperty('points', 'visibility', 'none')
+        }
+      }
+    })
   })
   loading.value = false
 })
@@ -138,6 +158,7 @@ watch(
             .addTo(map)
         }
       })
+
       map?.on('mouseleave', layerId, function () {
         if (map) {
           map.getCanvas().style.cursor = ''

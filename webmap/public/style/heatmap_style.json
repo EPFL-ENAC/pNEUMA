@@ -6,6 +6,10 @@
       "type": "vector",
       "tiles": ["https://enacit4r-tiles.epfl.ch/trajectories/{z}/{x}/{y}"]
     },
+    "points": {
+      "type": "vector",
+      "tiles": ["https://enacit4r-tiles.epfl.ch/points/{z}/{x}/{y}"]
+    },
     "background": {
       "tileSize": 256,
       "tiles": ["https://tile.osm.ch/osm-swiss-style/{z}/{x}/{y}.png"],
@@ -101,6 +105,37 @@
         ],
         "line-width": 2,
         "line-opacity": 0.1
+      }
+    },
+    {
+      "id": "points",
+      "type": "circle",
+      "source": "points",
+      "source-layer": "points",
+      "layout": {
+        "visibility": "none"
+      },
+      "filter": ["==", ["get", "id"], 0],
+      "paint": {
+        "circle-color": [
+          "interpolate",
+          ["linear"],
+          ["get", "speed"],
+          0,
+          "#a50026",
+          10,
+          "#d6352c",
+          20,
+          "#f37547",
+          30,
+          "#fdbe70",
+          40,
+          "#fdefa5",
+          50,
+          "#fcf5ab",
+          60,
+          "#006837"
+        ]
       }
     },
     {
