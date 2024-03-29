@@ -56,41 +56,74 @@ onMounted(() => {
 
   // filterLayers(props.filterIds)
 
+  let hoveredStateId: number = -1
+
   map.once('load', () => {
     // filterLayers(props.filterIds)
 
-    map?.on('mousemove', function (e) {
-      if (map) {
-        const features = map.queryRenderedFeatures(e.point)
-        const ids = features.map((feat: any) => feat.properties.id)
-        // Update the filter for the 'points' layer.
-        // This will display only the features whose ids are under the mouse.
-        // We use the 'in' expression to match any of the ids.
-        if (ids.length > 0) {
-          const filter: FilterSpecification = ['==', ['get', 'id'], ids[0]]
-          map.setFilter('points', filter)
-          map.setLayoutProperty('points', 'visibility', 'visible')
-        } else {
-          // If no features are found under the mouse, reset the filter
-          // This is important to ensure that previously filtered points are not stuck on the map
-          map.setFilter('points', null)
-          map.setLayoutProperty('points', 'visibility', 'none')
-        }
+    map?.on('mouseleave', 'vehicles', () => {
+      if (hoveredStateId) {
+        map?.setFeatureState(
+          { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+          { hover: false }
+        )
+      }
+      hoveredStateId = -1
+      if (map) map.getCanvas().classList.remove('hovered-feature')
+    })
+
+    map?.on('click', 'vehicles', function (e) {})
+
+    map?.on('mousemove', 'vehicles', function (e) {
+      const features = e.features
+      if (features && features.length > 0 && map) {
+        map.getCanvas().classList.add('hovered-feature')
+        throttle(
+          () => {
+            const newId = features[0]?.properties?.id || -1
+
+            if (newId !== hoveredStateId) {
+              if (hoveredStateId) {
+                map?.setFeatureState(
+                  { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+                  { hover: false }
+                )
+              }
+              hoveredStateId = newId
+
+              map?.setFeatureState(
+                { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+                { hover: true }
+              )
+            }
+          },
+          'mouvemove',
+          30
+        )
+      } else if (map) {
+        map.getCanvas().classList.remove('hovered-feature')
       }
     })
   })
   loading.value = false
 })
 
-let throttleTimer = new Map<string, boolean>([])
+let throttleTimer = new Map<string, boolean>()
 
-const throttle = (callback: Function, id: string, time: number) => {
-  if (throttleTimer.get(id)) return
+const throttle = (callback: () => void, id: string, time: number) => {
+  if (throttleTimer.get(id)) {
+    // If currently throttled, exit the function
+    return
+  }
+
+  // Set the throttle flag
   throttleTimer.set(id, true)
+
+  // Clear the throttle flag after the specified time
   setTimeout(() => {
-    callback()
     throttleTimer.set(id, false)
   }, time)
+  callback()
 }
 
 const setFilter = (
@@ -212,5 +245,9 @@ function filterLayers(filterIds?: string[]) {
 <style scoped>
 #maplibre-map {
   height: 100%;
+}
+
+#maplibre-map >>> .hovered-feature {
+  cursor: pointer !important;
 }
 </style>

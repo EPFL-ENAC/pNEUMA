@@ -4,6 +4,7 @@
   "sources": {
     "pneuma": {
       "type": "vector",
+      "promoteId": "id",
       "tiles": ["https://enacit4r-tiles.epfl.ch/trajectories/{z}/{x}/{y}"]
     },
     "points": {
@@ -64,20 +65,6 @@
       }
     },
     {
-      "id": "ghost",
-      "type": "circle",
-      "source": "pneuma",
-      "source-layer": "data",
-      "layout": {
-        "visibility": "none"
-      },
-      "paint": {
-        "circle-color": "grey",
-        "circle-opacity": 0.3,
-        "circle-stroke-color": "transparent"
-      }
-    },
-    {
       "id": "vehicles",
       "type": "line",
       "source": "pneuma",
@@ -103,39 +90,8 @@
           "#007cbf",
           "#000000"
         ],
-        "line-width": 2,
-        "line-opacity": 0.1
-      }
-    },
-    {
-      "id": "points",
-      "type": "circle",
-      "source": "points",
-      "source-layer": "points",
-      "layout": {
-        "visibility": "none"
-      },
-      "filter": ["==", ["get", "id"], 0],
-      "paint": {
-        "circle-color": [
-          "interpolate",
-          ["linear"],
-          ["get", "speed"],
-          0,
-          "#a50026",
-          10,
-          "#d6352c",
-          20,
-          "#f37547",
-          30,
-          "#fdbe70",
-          40,
-          "#fdefa5",
-          50,
-          "#fcf5ab",
-          60,
-          "#006837"
-        ]
+        "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 8, 2],
+        "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.1]
       }
     },
     {

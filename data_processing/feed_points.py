@@ -19,14 +19,21 @@ def feed_points(name: str) -> None:
     user = os.getenv('DB_USER')
     password = os.getenv('DB_PASSWORD')
     host = os.getenv('DB_HOST')
+    port = os.getenv('DB_PORT')
 
-    conn = psycopg2.connect(
-        dbname=dbname,
-        user=user,
-        password=password,
-        host=host
-    )
-    
+    try:
+        conn = psycopg2.connect(
+            dbname=dbname,
+            user=user,
+            password=password,
+            host=host,
+            port=port
+        )
+        print("Database connection established successfully.")
+    except psycopg2.DatabaseError as e:
+        print(f"Database connection failed: {e}")
+        sys.exit(1)
+        
     cur = conn.cursor()
     # Set the schema you want to use
     schema_name = "pneuma"  # Replace with the name of your schema
