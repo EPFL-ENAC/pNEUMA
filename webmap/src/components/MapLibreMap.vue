@@ -8,6 +8,7 @@ import {
   NavigationControl,
   Popup,
   ScaleControl,
+  VectorTileSource,
   type FilterSpecification,
   type LngLatLike,
   type StyleSetterOptions,
@@ -72,7 +73,12 @@ onMounted(() => {
       if (map) map.getCanvas().classList.remove('hovered-feature')
     })
 
-    map?.on('click', 'vehicles', function (e) {})
+    map?.on('click', 'vehicles', function (e) {
+      const source = map?.getSource('points') as VectorTileSource
+      source.setTiles([
+        `https://enacit4r-tiles.epfl.ch/get_trajectories_points/{z}/{x}/{y}?ids=${hoveredStateId}`
+      ])
+    })
 
     map?.on('mousemove', 'vehicles', function (e) {
       const features = e.features
@@ -247,7 +253,7 @@ function filterLayers(filterIds?: string[]) {
   height: 100%;
 }
 
-#maplibre-map >>> .hovered-feature {
+#maplibre-map:deep(.hovered-feature) {
   cursor: pointer !important;
 }
 </style>
