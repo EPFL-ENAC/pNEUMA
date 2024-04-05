@@ -1,0 +1,30 @@
+services:
+  reverse-proxy:
+    image: traefik:v2.9
+    command:
+      - "--providers.docker"
+      - "--providers.file.directory=/configuration/"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+    environment:
+      - SSL_CERT_CRT=${SSL_CERT_CRT}
+      - SSL_CERT_KEY=${SSL_CERT_KEY}
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yaml:/configuration/traefik.yml
+      - /etc/ssl:/etc/ssl
+  frontend:
+    build: ./webmap
+    labels:
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.frontend.middlewares=frontend"
+      - "traefik.http.middlewares.frontend.compress=true"
+    restart: unless-stopped
