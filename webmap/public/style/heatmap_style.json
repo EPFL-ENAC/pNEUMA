@@ -5,11 +5,30 @@
     "pneuma": {
       "type": "vector",
       "promoteId": "id",
-      "tiles": ["https://enacit4r-tiles.epfl.ch/trajectories/{z}/{x}/{y}"]
+      "lineMetrics": true,
+      "tilesDev": ["http://0.0.0.0:3000/trajectories/{z}/{x}/{y}"],
+      "tilesProd": ["https://enacit4r-tiles.epfl.ch/trajectories/{z}/{x}/{y}"],
+      "tiles": ["http://0.0.0.0:3000/trajectories/{z}/{x}/{y}"]
     },
     "points": {
       "type": "vector",
-      "tiles": ["https://enacit4r-tiles.epfl.ch/get_trajectories_points/{z}/{x}/{y}"]
+      "promoteId": "id",
+      "tilesDev": ["http://0.0.0.0:3000/points/{z}/{x}/{y}"],
+      "tilesProd": ["https://enacit4r-tiles.epfl.ch/points/{z}/{x}/{y}"],
+      "tiles": ["http://0.0.0.0:3000/points/{z}/{x}/{y}"]
+    },
+    "trajectories_points": {
+      "type": "vector",
+      "tilesProd": ["https://enacit4r-tiles.epfl.ch/get_trajectories_points/{z}/{x}/{y}"],
+      "tilesDev": ["http://0.0.0.0:3000/get_trajectories_points/{z}/{x}/{y}"],
+      "tiles": ["http://0.0.0.0:3000/get_trajectories_points/{z}/{x}/{y}"]
+    },
+
+    "heatmap": {
+      "type": "vector",
+      "tilesProd": ["https://enacit4r-tiles.epfl.ch/speed_hexmap/{z}/{x}/{y}"],
+      "tilesDev": ["http://0.0.0.0:3000/speed_hexmap/{z}/{x}/{y}"],
+      "tiles": ["http://0.0.0.0:3000/speed_hexmap/{z}/{x}/{y}"]
     },
     "background": {
       "tileSize": 256,
@@ -34,34 +53,33 @@
       }
     },
     {
-      "id": "heatmap",
-      "type": "heatmap",
-      "source": "pneuma",
-      "source-layer": "data",
+      "id": "speed-heatmap",
+      "type": "fill",
+      "source": "heatmap",
+      "source-layer": "speed_hexmap",
       "maxzoom": 24,
       "layout": {
-        "visibility": "none"
+        "visibility": "visible"
       },
       "paint": {
-        "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 17, 0.2, 24, 2],
-        "heatmap-color": [
+        "fill-opacity": ["case", ["==", ["get", "avg_speed"], null], 0.1, 0.8],
+        "fill-color": [
           "interpolate",
-          ["linear"],
-          ["heatmap-density"],
+          ["exponential", 1],
+          ["get", "avg_speed"],
           0,
-          "rgba(33,102,172,0)",
-          0.2,
-          "rgb(103,169,207)",
-          0.4,
-          "rgb(209,229,240)",
-          0.6,
-          "rgb(253,219,199)",
-          0.8,
+          "rgb(178,24,43)",
+          20,
           "rgb(239,138,98)",
-          1,
-          "rgb(178,24,43)"
-        ],
-        "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 17, 10, 24, 50]
+          40,
+          "rgb(253,219,199)",
+          60,
+          "rgb(209,229,240)",
+          80,
+          "rgb(103,169,207)",
+          100,
+          "rgb(33,102,172)"
+        ]
       }
     },
     {
@@ -70,7 +88,7 @@
       "source": "pneuma",
       "source-layer": "trajectories",
       "layout": {
-        "visibility": "visible"
+        "visibility": "none"
       },
       "paint": {
         "line-color": [
@@ -98,10 +116,10 @@
     {
       "id": "positions",
       "type": "circle",
-      "source": "points",
+      "source": "trajectories_points",
       "source-layer": "get_trajectories_points",
       "layout": {
-        "visibility": "visible"
+        "visibility": "none"
       },
       "paint": {
         "circle-color": [
@@ -123,6 +141,38 @@
           60,
           "#006837"
         ]
+      }
+    },
+    {
+      "id": "all_points",
+      "type": "circle",
+      "source": "points",
+      "source-layer": "points",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "circle-color": [
+          "interpolate",
+          ["linear"],
+          ["get", "speed"],
+          0,
+          "#a50026",
+          10,
+          "#d6352c",
+          20,
+          "#f37547",
+          30,
+          "#fdbe70",
+          40,
+          "#fdefa5",
+          50,
+          "#fcf5ab",
+          60,
+          "#006837"
+        ],
+        "circle-radius": ["case", ["boolean", ["feature-state", "hover"], false], 6, 2],
+        "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.0]
       }
     },
     {

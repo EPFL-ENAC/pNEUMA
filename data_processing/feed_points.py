@@ -37,7 +37,7 @@ def feed_points(name: str) -> None:
     cur = conn.cursor()
     # Set the schema you want to use
     schema_name = "pneuma"  # Replace with the name of your schema
-    cur.execute(f'SET search_path TO "{schema_name}"')
+    # cur.execute(f'SET search_path TO "{schema_name}"')
 
     # Open your CSV file
     with open(name, 'r') as f:
@@ -46,30 +46,31 @@ def feed_points(name: str) -> None:
 
         # Buffer for batch insert
         buffer = []
-        batch_size = 1000  # Adjust the batch size as needed
+        batch_size = 10000  # Adjust the batch size as needed
 
         for row in reader:
-            id,vehicle_type,lat,lon,speed,lon_acc,lat_acc,timestamp = row
+            vehicle_id,vehicle_type,lat,lon,speed,acceleration,timestamp,hex_id_13,hex_id_14,hex_id_15 = row
             # Remove existing trajectory for this id
             # cur.execute("DELETE FROM points WHERE id = %s AND timestamp = %s", (id, timestamp))
             # Create a POINT geometry from lat and lon
             # ST_GeomFromText function constructs geometry from WKT (Well-Known Text) representation
             # 'POINT(lon lat)' is the WKT representation for a point
             point_wkt = f"POINT({lon} {lat})"
-            buffer.append((id, vehicle_type, lat, lon, speed, lon_acc, lat_acc, timestamp, point_wkt))
+            buffer.append((vehicle_id, vehicle_type, speed, acceleration, timestamp,hex_id_13,hex_id_14,hex_id_15, point_wkt))
 
             # Execute batch insert when buffer reaches batch size
             if len(buffer) >= batch_size:
                 execute_batch(cur, """
-                INSERT INTO points (id, vehicle_type, lat, lon, speed, lon_acc, lat_acc, timestamp, geom) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
+                INSERT INTO points (vehicle_id, vehicle_type, speed, acceleration, timestamp, hex_id_13,hex_id_14,hex_id_15, geom) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s,%s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
                 """, buffer)
                 buffer.clear()  # Clear the buffer after batch insert
+                print(f"Inserted {batch_size} records")
         # Insert remaining records
         if buffer:
             execute_batch(cur, """
-            INSERT INTO points (id, vehicle_type, lat, lon, speed, lon_acc, lat_acc, timestamp, geom) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
+            INSERT INTO points (vehicle_id, vehicle_type, speed, acceleration, timestamp, hex_id_13,hex_id_14,hex_id_15, geom) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s,%s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
             """, buffer)
 
     conn.commit()
