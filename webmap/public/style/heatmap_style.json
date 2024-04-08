@@ -57,28 +57,56 @@
       "type": "fill",
       "source": "heatmap",
       "source-layer": "speed_hexmap",
-      "maxzoom": 24,
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-opacity": 0.8,
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["get", "avg_speed"],
+          0,
+          "rgb(178,24,43)",
+          5,
+          "rgb(239,138,98)",
+          10,
+          "rgb(253,219,199)",
+          20,
+          "rgb(209,229,240)",
+          40,
+          "rgb(103,169,207)",
+          80,
+          "rgb(33,102,172)"
+        ]
+      }
+    },
+    {
+      "id": "count-heatmap",
+      "type": "fill",
+      "source": "heatmap",
+      "source-layer": "speed_hexmap",
       "layout": {
         "visibility": "visible"
       },
       "paint": {
-        "fill-opacity": ["case", ["==", ["get", "avg_speed"], null], 0.1, 0.8],
+        "fill-opacity": 0.8,
         "fill-color": [
           "interpolate",
-          ["exponential", 1],
-          ["get", "avg_speed"],
+          ["linear"],
+          ["get", "density"],
           0,
-          "rgb(178,24,43)",
+          ["to-color", "rgb(33,102,172)"],
+          10,
+          ["to-color", "rgb(103,169,207)"],
           20,
-          "rgb(239,138,98)",
+          ["to-color", "rgb(209,229,240)"],
+          30,
+          ["to-color", "rgb(253,219,199)"],
           40,
-          "rgb(253,219,199)",
-          60,
-          "rgb(209,229,240)",
-          80,
-          "rgb(103,169,207)",
-          100,
-          "rgb(33,102,172)"
+          ["to-color", "rgb(239,138,98)"],
+          50,
+          ["to-color", "rgb(178,24,43)"]
         ]
       }
     },
@@ -124,8 +152,8 @@
       "paint": {
         "circle-color": [
           "interpolate",
-          ["linear"],
-          ["get", "speed"],
+          ["exponential", 1.2],
+          ["get", "avg_speed"],
           0,
           "#a50026",
           10,
@@ -139,6 +167,8 @@
           50,
           "#fcf5ab",
           60,
+          "#006837",
+          250,
           "#006837"
         ]
       }

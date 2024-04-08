@@ -350,6 +350,8 @@ const debounce = (fn: Function, ms = 300) => {
           :filter-ids="filterIds"
           :popup-layer-ids="parameters.popupLayerIds"
           :zoom="parameters.zoom"
+          :max-zoom="19"
+          :min-zoom="14"
         />
       </v-col>
     </v-row>

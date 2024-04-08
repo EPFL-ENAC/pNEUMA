@@ -48,7 +48,9 @@ onMounted(() => {
     container: 'maplibre-map',
     style: props.styleSpec,
     center: props.center,
-    zoom: props.zoom
+    zoom: props.zoom,
+    minZoom: props.minZoom,
+    maxZoom: props.maxZoom
   })
   map.addControl(new NavigationControl({}))
   map.addControl(new GeolocateControl({}))
@@ -61,22 +63,31 @@ onMounted(() => {
 
   map.once('load', () => {
     // filterLayers(props.filterIds)
+    if (!map) return
 
     map?.on('mouseleave', 'vehicles', () => {
       if (hoveredStateId) {
-        map?.setFeatureState(
-          { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
-          { hover: false }
-        )
+        map
+          ?.setFeatureState(
+            { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+            { hover: false }
+          )
+          .setFeatureState(
+            { source: 'points', sourceLayer: 'points', id: hoveredStateId },
+            { hover: false }
+          )
       }
       hoveredStateId = -1
       if (map) map.getCanvas().classList.remove('hovered-feature')
     })
 
     map?.on('click', 'vehicles', function (e) {
-      const source = map?.getSource('points') as VectorTileSource
+      const source = map?.getSource('trajectories_points') as VectorTileSource
+      // source.setTiles([
+      //   `https://enacit4r-tiles.epfl.ch/get_trajectories_points/{z}/{x}/{y}?ids=${hoveredStateId}`
+      // ])
       source.setTiles([
-        `https://enacit4r-tiles.epfl.ch/get_trajectories_points/{z}/{x}/{y}?ids=${hoveredStateId}`
+        `http://0.0.0.0:3000/get_trajectories_points/{z}/{x}/{y}?ids=${hoveredStateId}`
       ])
     })
 
@@ -90,17 +101,27 @@ onMounted(() => {
 
             if (newId !== hoveredStateId) {
               if (hoveredStateId) {
-                map?.setFeatureState(
-                  { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
-                  { hover: false }
-                )
+                map
+                  ?.setFeatureState(
+                    { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+                    { hover: false }
+                  )
+                  .setFeatureState(
+                    { source: 'points', sourceLayer: 'points', id: hoveredStateId },
+                    { hover: false }
+                  )
               }
               hoveredStateId = newId
 
-              map?.setFeatureState(
-                { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
-                { hover: true }
-              )
+              map
+                ?.setFeatureState(
+                  { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+                  { hover: true }
+                )
+                .setFeatureState(
+                  { source: 'points', sourceLayer: 'points', id: hoveredStateId },
+                  { hover: true }
+                )
             }
           },
           'mouvemove',
