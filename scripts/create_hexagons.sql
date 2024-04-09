@@ -51,11 +51,53 @@ FROM (
 LEFT JOIN hexagons ON avg_points.hex_id = hexagons.hex_id;
 
 explain analyze
-select * from public.speed_hexmap(19,296698,202256,'{}');
+SELECT * FROM public.speed_hexmap(19, 296698, 202256, '{"vehicle_types": ["Taxi","Car"]}');
 
 
-select max(speed), min(speed), avg(speed) from points;
+explain analyze verbose
+select count(*) from points p where p.vehicle_type = 'Heavy Vehicle' and timestamp between 10 and 15;
 
+select max(speed), min(speed), avg(speed),med(speed) from points;
+
+select max(avg_speed), min(avg_speed), avg(avg_speed) from (
+SELECT
+		  hex_id_14 -- Assumed default resolution is 15
+	      AS hex_id,
+	        AVG(speed) AS avg_speed, AVG(acceleration) as avg_acceleration
+      	FROM points p
+      	GROUP by
+	      	 hex_id_14 -- Assumed default resolution is 15
+	      	 )
+	      	 
+SELECT 
+    width_bucket(avg_speed, 0, 250, 100) AS bin, 
+    COUNT(*) AS frequency,
+    MIN(avg_speed) AS bin_min,
+    MAX(avg_speed) AS bin_max
+FROM 
+    (SELECT
+		  hex_id_14 -- Assumed default resolution is 15
+	      AS hex_id,
+	        AVG(speed) AS avg_speed, AVG(acceleration) as avg_acceleration
+      	FROM points p
+      	GROUP by
+	      	 hex_id_14 -- Assumed default resolution is 15
+	      	 ) 
+GROUP BY 
+    bin 
+ORDER BY 
+    bin;
+
+SELECT
+		  hex_id_15 -- Assumed default resolution is 15
+	      AS hex_id,
+	        AVG(speed) AS avg_speed, AVG(acceleration) as avg_acceleration, count(*) as freq
+      	FROM points p
+      	GROUP by
+	      	 hex_id_15 -- Assumed default resolution is 15
+	      	 
+	      	 
+	      	 
 --ALTER TABLE points
 --DROP CONSTRAINT fk_points_hexagons_14;
 --

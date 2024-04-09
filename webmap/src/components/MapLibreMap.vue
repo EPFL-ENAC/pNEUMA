@@ -182,12 +182,23 @@ const onZoom = (callback: () => void) => {
   map?.on('zoom', callback)
 }
 
+const changeSourceTilesUrl = (sourceId: string, url: string) => {
+  const source = map?.getSource(sourceId) as VectorTileSource
+  source.setTiles([url])
+}
+
+const setLayerVisibility = (layerId: string, visibility: boolean) => {
+  map?.setLayoutProperty(layerId, 'visibility', visibility ? 'visible' : 'none')
+}
+
 defineExpose({
   update,
   setFilter,
   queryFeatures,
   setPaintProperty,
-  onZoom
+  onZoom,
+  changeSourceTilesUrl,
+  setLayerVisibility
 })
 
 watch(

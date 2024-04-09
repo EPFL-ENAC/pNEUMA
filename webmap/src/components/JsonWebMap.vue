@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import LayerSelector from '@/components/LayerSelector.vue'
 import MapLibreMap from '@/components/MapLibreMap.vue'
 import type { Parameters } from '@/utils/jsonWebMap'
 import type { SelectableSingleItem } from '@/utils/layerSelector'
@@ -35,6 +34,7 @@ const colorByProgression = ref<boolean>(false)
 
 const filterSingleVehicle = ref<boolean>(false)
 const usePreciseTimeRange = ref<boolean>(false)
+const heatmapSelection = ref<string>('speed-heatmap')
 const vehiclesIds = ref<number[]>([0, 10000])
 const timeRange = ref<number[]>([0, 1000])
 const preciseTimeRange = ref<number[]>([0, 100])
@@ -140,12 +140,28 @@ watch(
     selectedTypes
   ],
   () => {
-    console.log(filterIds.value)
     if (filterIds.value.includes('vehicles')) map.value?.setFilter('vehicles', getFilter())
     if (filterIds.value.includes('ghost')) map.value?.setFilter('ghost', ['all', ...getIdsFilter()])
     if (filterIds.value.includes('heatmap')) map.value?.setFilter('heatmap', getFilter())
   }
 )
+
+watch([selectedTypes, timeRange], () => {
+  map.value?.changeSourceTilesUrl(
+    'heatmap',
+    `http://0.0.0.0:3000/speed_hexmap/{z}/{x}/{y}?vehicle_types=${JSON.stringify(
+      selectedTypes.value
+    )}&start_time=${JSON.stringify(timeRange.value[0])}&end_time=${JSON.stringify(
+      timeRange.value[1]
+    )}`
+  )
+})
+
+watch(heatmapSelection, (heatmapSelection: string) => {
+  map.value?.setLayerVisibility('density-heatmap', heatmapSelection === 'density-heatmap')
+  map.value?.setLayerVisibility('speed-heatmap', heatmapSelection === 'speed-heatmap')
+  map.value?.setLayerVisibility('acceleration-heatmap', heatmapSelection === 'acceleration-heatmap')
+})
 
 watch(colorByProgression, (colorByProgression) => {
   if (!colorByProgression)
@@ -200,100 +216,6 @@ const debounce = (fn: Function, ms = 300) => {
       <v-col cols="12" md="3" sm="6" class="pl-6">
         <v-row>
           <v-col>
-            <LayerSelector v-model="selectedLayerIds" :items="parameters.selectableItems" />
-            <v-card>
-              <v-card-title> Vehicle IDs </v-card-title>
-              <v-card-text>
-                <v-checkbox
-                  v-model="filterSingleVehicle"
-                  density="compact"
-                  hide-details
-                  label="Select single vehicle"
-                />
-                <v-range-slider
-                  v-if="!filterSingleVehicle"
-                  v-model="vehiclesIds"
-                  hide-details
-                  :min="1"
-                  :max="10000"
-                  step="10"
-                  strict
-                  density="compact"
-                  thumb-label
-                ></v-range-slider>
-                <v-slider
-                  v-if="filterSingleVehicle"
-                  v-model="vehicleId"
-                  hide-details
-                  :min="0"
-                  :max="10000"
-                  step="1"
-                  strict
-                  density="compact"
-                  thumb-label
-                ></v-slider>
-              </v-card-text>
-            </v-card>
-            <v-card>
-              <v-card-title> Time range in seconds </v-card-title>
-              <v-card-text>
-                <v-range-slider
-                  v-model="timeRange"
-                  hide-details
-                  :min="0"
-                  :max="800"
-                  :step="1"
-                  strict
-                  density="compact"
-                  label="Time range"
-                  thumb-label
-                ></v-range-slider>
-                <v-checkbox
-                  v-model="usePreciseTimeRange"
-                  density="compact"
-                  hide-details
-                  label="Use fixed time range"
-                />
-                <v-slider
-                  v-if="usePreciseTimeRange"
-                  v-model="preciseTimeRangeMiddle"
-                  hide-details
-                  :min="timeRange[0] + ~~(preciseTimeRangeSize / 2)"
-                  :max="timeRange[1] - ~~(preciseTimeRangeSize / 2)"
-                  :step="1"
-                  strict
-                  thumb-label="always"
-                  label="Time range center"
-                >
-                  <template #thumb-label>
-                    <span class="thumb-label-nowrap">{{ preciseTimeRange }} </span>
-                  </template>
-                </v-slider>
-                <v-slider
-                  v-if="usePreciseTimeRange"
-                  v-model="preciseTimeRangeSize"
-                  hide-details
-                  :min="1"
-                  :max="Math.min(50, timeRange[1] - timeRange[0])"
-                  :step="1"
-                  strict
-                  density="compact"
-                  label="Time range size"
-                  thumb-label
-                ></v-slider>
-              </v-card-text>
-            </v-card>
-            <v-card>
-              <v-card-title> Color </v-card-title>
-              <v-card-text>
-                <v-checkbox
-                  v-model="colorByProgression"
-                  density="compact"
-                  hide-details
-                  label="Encode progression instead of speed"
-                />
-              </v-card-text>
-            </v-card>
             <v-card>
               <v-card-title> Vehicle type </v-card-title>
               <v-card-text>
@@ -308,19 +230,30 @@ const debounce = (fn: Function, ms = 300) => {
                 />
               </v-card-text>
             </v-card>
+
             <v-card>
-              <v-card-title> Speed range in km/h </v-card-title>
+              <v-card-title> Time range in seconds </v-card-title>
               <v-card-text>
                 <v-range-slider
-                  v-model="speedRange"
+                  v-model="timeRange"
                   hide-details
                   :min="0"
-                  :max="100"
-                  step="1"
+                  :max="800"
+                  :step="60"
                   strict
                   density="compact"
                   thumb-label
                 ></v-range-slider>
+              </v-card-text>
+            </v-card>
+            <v-card>
+              <v-card-title>Color encoding</v-card-title>
+              <v-card-text>
+                <v-radio-group v-model="heatmapSelection">
+                  <v-radio label="Density" value="density-heatmap"></v-radio>
+                  <v-radio label="Speed" value="speed-heatmap"></v-radio>
+                  <v-radio label="Acceleration" value="acceleration-heatmap"></v-radio>
+                </v-radio-group>
               </v-card-text>
             </v-card>
           </v-col>

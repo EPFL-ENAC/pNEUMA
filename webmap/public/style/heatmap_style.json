@@ -58,7 +58,7 @@
       "source": "heatmap",
       "source-layer": "speed_hexmap",
       "layout": {
-        "visibility": "none"
+        "visibility": "visible"
       },
       "paint": {
         "fill-opacity": 0.8,
@@ -67,27 +67,70 @@
           ["linear"],
           ["get", "avg_speed"],
           0,
-          "rgb(178,24,43)",
+          "#440154",
           5,
-          "rgb(239,138,98)",
+          "#482878",
           10,
-          "rgb(253,219,199)",
+          "#3e4989",
           20,
-          "rgb(209,229,240)",
+          "#31688e",
+          30,
+          "#26828e",
           40,
-          "rgb(103,169,207)",
+          "#1f9e89",
+          50,
+          "#35b779",
+          60,
+          "#6ece58",
+          70,
+          "#b5de2b",
           80,
-          "rgb(33,102,172)"
+          "#fde725"
         ]
       }
     },
     {
-      "id": "count-heatmap",
+      "id": "acceleration-heatmap",
       "type": "fill",
       "source": "heatmap",
       "source-layer": "speed_hexmap",
       "layout": {
-        "visibility": "visible"
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-opacity": 0.8,
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["get", "avg_acceleration"],
+          0,
+          "#440154",
+          0.3125,
+          "#482878",
+          0.625,
+          "#3e4989",
+          0.9375,
+          "#31688e",
+          1.25,
+          "#26828e",
+          1.5625,
+          "#1f9e89",
+          1.875,
+          "#35b779",
+          2.1875,
+          "#6ece58",
+          2.5,
+          "#fde725"
+        ]
+      }
+    },
+    {
+      "id": "density-heatmap",
+      "type": "fill",
+      "source": "heatmap",
+      "source-layer": "speed_hexmap",
+      "layout": {
+        "visibility": "none"
       },
       "paint": {
         "fill-opacity": 0.8,
@@ -96,17 +139,17 @@
           ["linear"],
           ["get", "density"],
           0,
-          ["to-color", "rgb(33,102,172)"],
+          "#002051",
           10,
-          ["to-color", "rgb(103,169,207)"],
+          "#2b446e",
           20,
-          ["to-color", "rgb(209,229,240)"],
+          "#696970",
           30,
-          ["to-color", "rgb(253,219,199)"],
+          "#948f78",
           40,
-          ["to-color", "rgb(239,138,98)"],
+          "#caba6a",
           50,
-          ["to-color", "rgb(178,24,43)"]
+          "#fdea45"
         ]
       }
     },
