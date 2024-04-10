@@ -27,6 +27,7 @@ ADD CONSTRAINT fk_points_hexagons_15
 FOREIGN KEY (hex_id_15)
 REFERENCES hexagons (hex_id);
 
+
 -- small tile
 EXPLAIN ANALYZE
 SELECT avg_points.hex_id, avg_speed, hexagons.geom
@@ -103,6 +104,5 @@ SELECT
 --
 --ALTER TABLE points
 --DROP CONSTRAINT fk_points_hexagons_15;
-
 
 
