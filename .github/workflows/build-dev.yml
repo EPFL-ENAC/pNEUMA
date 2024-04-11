@@ -20,6 +20,9 @@ jobs:
           - Dockerfile: ./webmap/Dockerfile
             context: ./webmap
             image: ghcr.io/epfl-enac/pneuma-frontend
+          - Dockerfile: ./database/Dockerfile
+            context: ./database
+            image: ghcr.io/epfl-enac/pneuma-database
     permissions:
       contents: read
       packages: write
