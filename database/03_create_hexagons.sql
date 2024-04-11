@@ -9,7 +9,7 @@ CREATE TABLE hexagons (
 
 -- INSERT INTO hexagons (hex_id, geom)
 -- SELECT hex_id, h3_cell_to_boundary(hex_id)::geometry
--- FROM (SELECT DISTINCT hex_id_13 AS hex_id FROM points union SELECT DISTINCT hex_id_14 AS hex_id FROM points union SELECT DISTINCT hex_id_15 AS hex_id FROM points) AS test;
+-- FROM (SELECT DISTINCT hex_id_13 AS hex_id FROM points union SELECT DISTINCT hex_id_14 AS hex_id FROM points) AS test;
 
 
 
@@ -27,10 +27,6 @@ ADD CONSTRAINT fk_points_hexagons_14
 FOREIGN KEY (hex_id_14)
 REFERENCES hexagons (hex_id);
 
-ALTER TABLE points
-ADD CONSTRAINT fk_points_hexagons_15
-FOREIGN KEY (hex_id_15)
-REFERENCES hexagons (hex_id);
 
 
 

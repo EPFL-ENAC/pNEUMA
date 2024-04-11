@@ -42,14 +42,13 @@ def process_chunk(chunk_data, chunk_index, output_dir):
                     lon_acc = float(lon_acc)
                     lat_acc = float(lat_acc)
                     hex_id_14 = h3.geo_to_h3(float(lat), float(lon), 14)
-                    hex_id_15 = h3.geo_to_h3(float(lat), float(lon), 15)
                     hex_id_13 = h3.geo_to_h3(float(lat), float(lon), 13)
                     if last_included_timestamp is None :
                         trajectory_start_time = timestamp
                     if last_included_timestamp is None or timestamp - last_included_timestamp >= sampling_interval:
                         if not use_linestring : 
                             acceleration = math.sqrt(math.pow(lon_acc,2)+ math.pow(lat_acc,2))                            
-                            processed_data.append([track_id, vehicle_type,lat, lon, speed,acceleration, timestamp,hex_id_13,hex_id_14,hex_id_15])
+                            processed_data.append([track_id, vehicle_type,lat, lon, speed,acceleration, timestamp,hex_id_13,hex_id_14])
                         else :
                             trajectory.append(f"{lon} {lat}")     
                         last_included_timestamp = timestamp
@@ -81,7 +80,7 @@ def concatenate_files(output_file, output_dir):
 
     with open(output_file, 'w', newline='') as f_out:
         if not use_linestring :
-            f_out.write('vehicle_id,vehicle_type,lat,lon,speed,acceleration,timestamp,hex_id_13,hex_id_14,hex_id_15\n')  # Write headers here
+            f_out.write('vehicle_id,vehicle_type,lat,lon,speed,acceleration,timestamp,hex_id_13,hex_id_14\n')  # Write headers here
         else : 
             f_out.write('vehicle_id,vehicle_type,traveled_d,avg_speed,trajectory_start_time,trajectory_end_time,trajectory\n')
         for filename in sorted(os.listdir(output_dir), key=sort_key):

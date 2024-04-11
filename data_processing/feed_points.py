@@ -49,19 +49,19 @@ def feed_points(name: str) -> None:
         batch_size = 10000  # Adjust the batch size as needed
 
         for row in reader:
-            vehicle_id,vehicle_type,lat,lon,speed,acceleration,timestamp,hex_id_13,hex_id_14,hex_id_15 = row
+            vehicle_id,vehicle_type,lat,lon,speed,acceleration,timestamp,hex_id_13,hex_id_14 = row
             # Remove existing trajectory for this id
             # cur.execute("DELETE FROM points WHERE id = %s AND timestamp = %s", (id, timestamp))
             # Create a POINT geometry from lat and lon
             # ST_GeomFromText function constructs geometry from WKT (Well-Known Text) representation
             # 'POINT(lon lat)' is the WKT representation for a point
             point_wkt = f"POINT({lon} {lat})"
-            buffer.append((vehicle_id, vehicle_type, speed, acceleration, timestamp,hex_id_13,hex_id_14,hex_id_15, point_wkt))
+            buffer.append((vehicle_id, vehicle_type, speed, acceleration, timestamp,hex_id_13,hex_id_14, point_wkt))
 
             # Execute batch insert when buffer reaches batch size
             if len(buffer) >= batch_size:
                 execute_batch(cur, """
-                INSERT INTO points (vehicle_id, vehicle_type, speed, acceleration, timestamp, hex_id_13,hex_id_14,hex_id_15, geom) 
+                INSERT INTO points (vehicle_id, vehicle_type, speed, acceleration, timestamp, hex_id_13,hex_id_14, geom) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s,%s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
                 """, buffer)
                 buffer.clear()  # Clear the buffer after batch insert
@@ -69,7 +69,7 @@ def feed_points(name: str) -> None:
         # Insert remaining records
         if buffer:
             execute_batch(cur, """
-            INSERT INTO points (vehicle_id, vehicle_type, speed, acceleration, timestamp, hex_id_13,hex_id_14,hex_id_15, geom) 
+            INSERT INTO points (vehicle_id, vehicle_type, speed, acceleration, timestamp, hex_id_13,hex_id_14, geom) 
             VALUES (%s, %s, %s, %s, %s, %s, %s,%s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
             """, buffer)
 
