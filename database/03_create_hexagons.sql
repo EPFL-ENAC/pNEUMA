@@ -7,9 +7,9 @@ CREATE TABLE hexagons (
 
 -- Insert hexagons by using hex_id from the points table
 
-INSERT INTO hexagons (hex_id, geom)
-SELECT hex_id, h3_cell_to_boundary(hex_id)::geometry
-FROM (SELECT DISTINCT hex_id_13 AS hex_id FROM points union SELECT DISTINCT hex_id_14 AS hex_id FROM points union SELECT DISTINCT hex_id_15 AS hex_id FROM points) AS test;
+-- INSERT INTO hexagons (hex_id, geom)
+-- SELECT hex_id, h3_cell_to_boundary(hex_id)::geometry
+-- FROM (SELECT DISTINCT hex_id_13 AS hex_id FROM points union SELECT DISTINCT hex_id_14 AS hex_id FROM points union SELECT DISTINCT hex_id_15 AS hex_id FROM points) AS test;
 
 
 

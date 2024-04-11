@@ -1,5 +1,5 @@
 dev-martin: 
-				docker run --net=host -e DATABASE_URL=postgresql://postgres:password@localhost/pneuma ghcr.io/maplibre/martin
+				docker run --rm --net=host -e DATABASE_URL=postgresql://postgres:password@localhost/postgres ghcr.io/maplibre/martin
 # replace password postgres & host with your own
 
 dev-front:
