@@ -149,8 +149,8 @@ watch(
 const heatmapSourceUrl = computed(() => {
   return `https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}?vehicle_types=${JSON.stringify(
     selectedTypes.value
-  )}&start_time=${JSON.stringify(timeRange.value[0])}&end_time=${JSON.stringify(
-    timeRange.value[1]
+  )}&start_time=${JSON.stringify(timeRange.value[0] * 1000)}&end_time=${JSON.stringify(
+    timeRange.value[1] * 1000
   )}`
 })
 watch(heatmapSourceUrl, (newUrl, oldUrl) => {
