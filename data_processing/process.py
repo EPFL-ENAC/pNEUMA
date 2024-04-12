@@ -8,7 +8,7 @@ import math
 import h3
 
 chunk_size = 10  # Adjust this based on your system's memory capacity
-sampling_interval = 0.5  # Change this value for different sampling, it's in seconds
+sampling_interval = 500  # Change this value for different sampling, it's in milliseconds
 
 use_linestring = False # If true, the output will be a linestring, otherwise it will be multiples points
 
@@ -37,7 +37,7 @@ def process_chunk(chunk_data, chunk_index, output_dir):
             for i in range(0, len(data_points)-1, 6):
                 try:
                     lat, lon, speed, lon_acc, lat_acc, timestamp = data_points[i:i+6]
-                    timestamp = float(timestamp)
+                    timestamp = int(float(timestamp)*1000) # Convert to milliseconds
                     speed = float(speed)
                     lon_acc = float(lon_acc)
                     lat_acc = float(lat_acc)

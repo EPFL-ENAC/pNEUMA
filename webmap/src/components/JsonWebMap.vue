@@ -146,15 +146,15 @@ watch(
   }
 )
 
-watch([selectedTypes, timeRange], () => {
-  map.value?.changeSourceTilesUrl(
-    'heatmap',
-    `http://0.0.0.0:3000/speed_hexmap/{z}/{x}/{y}?vehicle_types=${JSON.stringify(
-      selectedTypes.value
-    )}&start_time=${JSON.stringify(timeRange.value[0])}&end_time=${JSON.stringify(
-      timeRange.value[1]
-    )}`
-  )
+const heatmapSourceUrl = computed(() => {
+  return `https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}?vehicle_types=${JSON.stringify(
+    selectedTypes.value
+  )}&start_time=${JSON.stringify(timeRange.value[0])}&end_time=${JSON.stringify(
+    timeRange.value[1]
+  )}`
+})
+watch(heatmapSourceUrl, (newUrl, oldUrl) => {
+  if (newUrl !== oldUrl) map.value?.changeSourceTilesUrl('heatmap', newUrl)
 })
 
 watch(heatmapSelection, (heatmapSelection: string) => {

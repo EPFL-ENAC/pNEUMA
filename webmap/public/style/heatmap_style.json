@@ -6,29 +6,29 @@
       "type": "vector",
       "promoteId": "id",
       "lineMetrics": true,
-      "tilesDev": ["http://0.0.0.0:3000/trajectories/{z}/{x}/{y}"],
-      "tilesProd": ["https://enacit4r-tiles.epfl.ch/trajectories/{z}/{x}/{y}"],
-      "tiles": ["http://0.0.0.0:3000/trajectories/{z}/{x}/{y}"]
+      "tilesDev": ["http://localhost/trajectories/{z}/{x}/{y}"],
+      "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
+      "tiles": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"]
     },
     "points": {
       "type": "vector",
       "promoteId": "id",
-      "tilesDev": ["http://0.0.0.0:3000/points/{z}/{x}/{y}"],
-      "tilesProd": ["https://enacit4r-tiles.epfl.ch/points/{z}/{x}/{y}"],
-      "tiles": ["http://0.0.0.0:3000/points/{z}/{x}/{y}"]
+      "tilesDev": ["http://localhost/points/{z}/{x}/{y}"],
+      "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/points/{z}/{x}/{y}"],
+      "tiles": ["https://pneuma-dev.epfl.ch/tiles/points/{z}/{x}/{y}"]
     },
     "trajectories_points": {
       "type": "vector",
-      "tilesProd": ["https://enacit4r-tiles.epfl.ch/get_trajectories_points/{z}/{x}/{y}"],
-      "tilesDev": ["http://0.0.0.0:3000/get_trajectories_points/{z}/{x}/{y}"],
-      "tiles": ["http://0.0.0.0:3000/get_trajectories_points/{z}/{x}/{y}"]
+      "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/get_trajectories_points/{z}/{x}/{y}"],
+      "tilesDev": ["http://localhost/get_trajectories_points/{z}/{x}/{y}"],
+      "tiles": ["https://pneuma-dev.epfl.ch/tiles/get_trajectories_points/{z}/{x}/{y}"]
     },
 
     "heatmap": {
       "type": "vector",
-      "tilesProd": ["https://enacit4r-tiles.epfl.ch/speed_hexmap/{z}/{x}/{y}"],
-      "tilesDev": ["http://0.0.0.0:3000/speed_hexmap/{z}/{x}/{y}"],
-      "tiles": ["http://0.0.0.0:3000/speed_hexmap/{z}/{x}/{y}"]
+      "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
+      "tilesDev": ["http://localhost/speed_hexmap/{z}/{x}/{y}"],
+      "tiles": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"]
     },
     "background": {
       "tileSize": 256,

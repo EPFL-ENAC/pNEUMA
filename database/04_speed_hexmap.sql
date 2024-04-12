@@ -7,8 +7,7 @@ CREATE OR REPLACE FUNCTION public.speed_hexmap(z integer, x integer, y integer, 
 AS $function$
 DECLARE
   mvt bytea;
-  threshold_zoom_14 integer := 16; -- Set your threshold zoom level here
-  threshold_zoom_15 integer := 18; -- Set your threshold zoom level here
+  threshold_zoom integer := 16; -- Set your threshold zoom level here
   tile_margin numeric; -- Set your threshold zoom level here
   hex_area numeric; -- variable to store hexagon area
   vehicle_types vehicle_type_enum[]; -- Array to store vehicle types from query parameters
@@ -41,15 +40,12 @@ begin
 	    vehicle_types := NULL;
 	END IF;
 
-	IF z < 16 THEN
+	IF z < threshold_zoom THEN
 		hex_area := 43.870; -- Example area value for resolution 13
 		tile_margin := 8;
-	ELSIF z < 18 THEN
+	ELSE
 		hex_area := 6.267; -- Example area value for resolution level 14
 		tile_margin := 3;
-	elseif z >= 18 THEN
-		hex_area := 0.895; -- Example area value for resolution level 15
-		tile_margin := 1;
 	END IF;
 
   -- Generating the MVT with pre-existing Hexagonal Grid
@@ -70,9 +66,8 @@ begin
     INNER JOIN (
     	SELECT
 		    CASE
-	         WHEN z < threshold_zoom_14 THEN hex_id_13
-	         WHEN z >= threshold_zoom_14 AND z < threshold_zoom_15 THEN hex_id_14
-	         ELSE hex_id_15 -- Assumed default resolution is 15
+	         WHEN z < threshold_zoom THEN hex_id_13
+	         else hex_id_14
 	        END AS hex_id,
 	        AVG(speed) AS avg_speed, AVG(acceleration) as avg_acceleration, count(*) as freq
       	FROM points p
@@ -81,9 +76,8 @@ begin
 		and ( start_time is null or end_time is null or p.timestamp between start_time and end_time)
       	GROUP by
 	      	CASE
-  	         WHEN z < threshold_zoom_14 THEN hex_id_13
-	         WHEN z >= threshold_zoom_14 AND z < threshold_zoom_15 THEN hex_id_14
-	         ELSE hex_id_15 -- Assumed default resolution is 15
+  	         WHEN z < threshold_zoom THEN hex_id_13
+	         else hex_id_14
 	        END
     ) AS avg_points ON h.hex_id = avg_points.hex_id
   ) as tile WHERE geom IS NOT NULL;

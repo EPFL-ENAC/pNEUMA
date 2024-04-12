@@ -16,16 +16,16 @@ CREATE TABLE hexagons (
 CREATE INDEX idx_hexagons_ids ON hexagons (hex_id);
 CREATE INDEX idx_hexagons_geom ON hexagons USING GIST (geom);
 
-ALTER TABLE points
-ADD CONSTRAINT fk_points_hexagons_13
-FOREIGN KEY (hex_id_13)
-REFERENCES hexagons (hex_id);
+-- ALTER TABLE points
+-- ADD CONSTRAINT fk_points_hexagons_13
+-- FOREIGN KEY (hex_id_13)
+-- REFERENCES hexagons (hex_id);
 
 
-ALTER TABLE points
-ADD CONSTRAINT fk_points_hexagons_14
-FOREIGN KEY (hex_id_14)
-REFERENCES hexagons (hex_id);
+-- ALTER TABLE points
+-- ADD CONSTRAINT fk_points_hexagons_14
+-- FOREIGN KEY (hex_id_14)
+-- REFERENCES hexagons (hex_id);
 
 
 

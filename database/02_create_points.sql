@@ -3,9 +3,9 @@
 CREATE TABLE points (
     vehicle_id INT NOT NULL,
     vehicle_type vehicle_type_enum NOT NULL,
-    speed FLOAT8,
-    acceleration FLOAT8,
-    timestamp FLOAT8 NOT NULL,
+    speed FLOAT4,
+    acceleration FLOAT4,
+    timestamp INT4 NOT NULL,
     hex_id_13 H3INDEX NOT NULL,
     hex_id_14 H3INDEX NOT NULL,
     geom GEOMETRY(Point, 4326) not null,

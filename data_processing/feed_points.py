@@ -46,7 +46,7 @@ def feed_points(name: str) -> None:
 
         # Buffer for batch insert
         buffer = []
-        batch_size = 10000  # Adjust the batch size as needed
+        batch_size = 100000  # Adjust the batch size as needed
 
         for row in reader:
             vehicle_id,vehicle_type,lat,lon,speed,acceleration,timestamp,hex_id_13,hex_id_14 = row
@@ -62,7 +62,7 @@ def feed_points(name: str) -> None:
             if len(buffer) >= batch_size:
                 execute_batch(cur, """
                 INSERT INTO points (vehicle_id, vehicle_type, speed, acceleration, timestamp, hex_id_13,hex_id_14, geom) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s,%s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
+                VALUES (%s, %s, %s, %s, %s, %s, %s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
                 """, buffer)
                 buffer.clear()  # Clear the buffer after batch insert
                 print(f"Inserted {batch_size} records")
@@ -70,7 +70,7 @@ def feed_points(name: str) -> None:
         if buffer:
             execute_batch(cur, """
             INSERT INTO points (vehicle_id, vehicle_type, speed, acceleration, timestamp, hex_id_13,hex_id_14, geom) 
-            VALUES (%s, %s, %s, %s, %s, %s, %s,%s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
+            VALUES (%s, %s, %s, %s, %s, %s, %s, public.ST_SetSRID(public.ST_GeomFromText(%s), 4326))
             """, buffer)
 
     conn.commit()
