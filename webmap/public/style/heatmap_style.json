@@ -28,7 +28,8 @@
       "type": "vector",
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
       "tilesDev": ["http://localhost/speed_hexmap/{z}/{x}/{y}"],
-      "tiles": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"]
+      "tiles": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
+      "maxzoom": 16
     },
     "background": {
       "tileSize": 256,
