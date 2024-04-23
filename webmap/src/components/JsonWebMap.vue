@@ -4,7 +4,15 @@ import type { Parameters } from '@/utils/jsonWebMap'
 import type { SelectableSingleItem } from '@/utils/layerSelector'
 import axios from 'axios'
 import type { ExpressionSpecification } from 'maplibre-gl'
-import { computed, ref, shallowRef, triggerRef, watch } from 'vue'
+import { computed, onMounted, ref, shallowRef, triggerRef, watch } from 'vue'
+
+const debounce = (fn: Function, ms = 300) => {
+  let timeoutId: ReturnType<typeof setTimeout>
+  return function (this: any, ...args: any[]) {
+    clearTimeout(timeoutId)
+    timeoutId = setTimeout(() => fn.apply(this, args), ms)
+  }
+}
 
 const props = defineProps<{
   styleUrl: string
@@ -33,31 +41,10 @@ const filterIds = computed<string[]>(() => [
 const colorByProgression = ref<boolean>(false)
 
 const filterSingleVehicle = ref<boolean>(false)
-const usePreciseTimeRange = ref<boolean>(false)
-const heatmapSelection = ref<string>('speed-heatmap')
+
+const heatmapSelection = ref<string>('speed')
 const vehiclesIds = ref<number[]>([0, 10000])
-const timeRange = ref<number[]>([0, 1000])
-const preciseTimeRange = ref<number[]>([0, 100])
-
-const preciseTimeRangeSize = computed({
-  get() {
-    return preciseTimeRange.value[1] - preciseTimeRange.value[0]
-  },
-  set(newValue) {
-    preciseTimeRange.value[1] = preciseTimeRange.value[0] + newValue
-  }
-})
-
-const preciseTimeRangeMiddle = computed({
-  get() {
-    return preciseTimeRange.value[0] + ~~(preciseTimeRangeSize.value / 2)
-  },
-  set(newValue) {
-    const halfSize = ~~(preciseTimeRangeSize.value / 2)
-    preciseTimeRange.value[0] = newValue - halfSize
-    preciseTimeRange.value[1] = newValue + halfSize
-  }
-})
+const timeRange = ref<number>(1)
 
 const speedRange = ref<number[]>([0, 100])
 const vehicleId = ref<number>(1)
@@ -120,47 +107,58 @@ const getFilter = (): ExpressionSpecification => {
   const filter: ExpressionSpecification = [
     'all',
     getTypeFilter(),
-    ...getIdsFilter(),
-    ...getRangeFilter('trajectory_start_time', timeRange.value)
+    ...getIdsFilter()
+    // ...getRangeFilter('trajectory_start_time', timeRange.value)
     // ...(usePreciseTimeRange.value ? getRangeFilter('time', preciseTimeRange.value) : []),
     // ...getRangeFilter('speed', speedRange.value)
   ]
   return filter
 }
 
-watch(
-  [
-    vehiclesIds,
-    filterSingleVehicle,
-    vehicleId,
-    timeRange,
-    preciseTimeRangeMiddle,
-    preciseTimeRangeSize,
-    speedRange,
-    selectedTypes
-  ],
-  () => {
-    if (filterIds.value.includes('vehicles')) map.value?.setFilter('vehicles', getFilter())
-    if (filterIds.value.includes('ghost')) map.value?.setFilter('ghost', ['all', ...getIdsFilter()])
-    if (filterIds.value.includes('heatmap')) map.value?.setFilter('heatmap', getFilter())
+watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selectedTypes], () => {
+  if (filterIds.value.includes('vehicles')) map.value?.setFilter('vehicles', getFilter())
+  if (filterIds.value.includes('ghost')) map.value?.setFilter('ghost', ['all', ...getIdsFilter()])
+  if (filterIds.value.includes('heatmap')) map.value?.setFilter('heatmap', getFilter())
+})
+
+const baseHeatmapSourceUrl = ref<string>('')
+onMounted(() => {
+  baseHeatmapSourceUrl.value = map.value?.getSourceTilesUrl('heatmap') ?? ''
+})
+
+const createExpressionMaplibre = (minute_start: number, minute_end: number) => {}
+
+watch([timeRange, heatmapSelection], () => {
+  const category = heatmapSelection.value
+  const propertyName = category + '_' + timeRange.value
+
+  const currentFillColor = map.value?.getPaintProperty(category + '-heatmap', 'fill-color')
+
+  if (currentFillColor && Array.isArray(currentFillColor) && currentFillColor.length > 3) {
+    if (category == 'freq')
+      currentFillColor[2] = [
+        'coalesce',
+        ['/', ['to-number', ['get', propertyName]], ['to-number', ['get', 'area']]],
+        -1
+      ]
+    else currentFillColor[2] = ['to-number', ['coalesce', ['get', propertyName], -1]]
+
+    map.value?.setPaintProperty(category + '-heatmap', 'fill-color', currentFillColor)
   }
-)
+})
 
 const heatmapSourceUrl = computed(() => {
-  return `https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}?vehicle_types=${JSON.stringify(
-    selectedTypes.value
-  )}&start_time=${JSON.stringify(timeRange.value[0] * 1000)}&end_time=${JSON.stringify(
-    timeRange.value[1] * 1000
-  )}`
+  // return `https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}?vehicle_types=${JSON.stringify(
+  return baseHeatmapSourceUrl.value + `?vehicle_types=${JSON.stringify(selectedTypes.value)}`
 })
 watch(heatmapSourceUrl, (newUrl, oldUrl) => {
   if (newUrl !== oldUrl) map.value?.changeSourceTilesUrl('heatmap', newUrl)
 })
 
 watch(heatmapSelection, (heatmapSelection: string) => {
-  map.value?.setLayerVisibility('density-heatmap', heatmapSelection === 'density-heatmap')
-  map.value?.setLayerVisibility('speed-heatmap', heatmapSelection === 'speed-heatmap')
-  map.value?.setLayerVisibility('acceleration-heatmap', heatmapSelection === 'acceleration-heatmap')
+  map.value?.setLayerVisibility('freq-heatmap', heatmapSelection === 'freq')
+  map.value?.setLayerVisibility('speed-heatmap', heatmapSelection === 'speed')
+  map.value?.setLayerVisibility('acceleration-heatmap', heatmapSelection === 'acceleration')
 })
 
 watch(colorByProgression, (colorByProgression) => {
@@ -195,19 +193,6 @@ watch(colorByProgression, (colorByProgression) => {
       '#ff0000'
     ])
 })
-
-watch(timeRange, (timeRange) => {
-  preciseTimeRange.value[0] = Math.max(preciseTimeRange.value[0], timeRange[0])
-  preciseTimeRange.value[1] = Math.min(preciseTimeRange.value[1], timeRange[1])
-})
-
-const debounce = (fn: Function, ms = 300) => {
-  let timeoutId: ReturnType<typeof setTimeout>
-  return function (this: any, ...args: any[]) {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => fn.apply(this, args), ms)
-  }
-}
 </script>
 
 <template>
@@ -234,25 +219,24 @@ const debounce = (fn: Function, ms = 300) => {
             <v-card>
               <v-card-title> Time range in seconds </v-card-title>
               <v-card-text>
-                <v-range-slider
+                <v-slider
                   v-model="timeRange"
                   hide-details
-                  :min="0"
-                  :max="800"
-                  :step="60"
-                  strict
+                  :min="1"
+                  :max="14"
+                  :step="1"
                   density="compact"
                   thumb-label
-                ></v-range-slider>
+                ></v-slider>
               </v-card-text>
             </v-card>
             <v-card>
               <v-card-title>Color encoding</v-card-title>
               <v-card-text>
                 <v-radio-group v-model="heatmapSelection">
-                  <v-radio label="Density" value="density-heatmap"></v-radio>
-                  <v-radio label="Speed" value="speed-heatmap"></v-radio>
-                  <v-radio label="Acceleration" value="acceleration-heatmap"></v-radio>
+                  <v-radio label="Density" value="freq"></v-radio>
+                  <v-radio label="Speed" value="speed"></v-radio>
+                  <v-radio label="Acceleration" value="acceleration"></v-radio>
                 </v-radio-group>
               </v-card-text>
             </v-card>

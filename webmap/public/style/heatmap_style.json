@@ -8,20 +8,20 @@
       "lineMetrics": true,
       "tilesDev": ["http://localhost/trajectories/{z}/{x}/{y}"],
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
-      "tiles": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"]
+      "tiles": ["http://0.0.0.0:3000/trajectories/{z}/{x}/{y}"]
     },
     "points": {
       "type": "vector",
       "promoteId": "id",
       "tilesDev": ["http://localhost/points/{z}/{x}/{y}"],
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/points/{z}/{x}/{y}"],
-      "tiles": ["https://pneuma-dev.epfl.ch/tiles/points/{z}/{x}/{y}"]
+      "tiles": ["http://0.0.0.0:3000/points/{z}/{x}/{y}"]
     },
     "trajectories_points": {
       "type": "vector",
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/get_trajectories_points/{z}/{x}/{y}"],
       "tilesDev": ["http://localhost/get_trajectories_points/{z}/{x}/{y}"],
-      "tiles": ["https://pneuma-dev.epfl.ch/tiles/get_trajectories_points/{z}/{x}/{y}"]
+      "tiles": ["http://0.0.0.0:3000/get_trajectories_points/{z}/{x}/{y}"]
     },
 
     "heatmap": {
@@ -29,7 +29,8 @@
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
       "tilesDev": ["http://localhost/speed_hexmap/{z}/{x}/{y}"],
       "tiles": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
-      "maxzoom": 16
+      "minzoom": 13,
+      "maxzoom": 17
     },
     "background": {
       "tileSize": 256,
@@ -66,7 +67,9 @@
         "fill-color": [
           "interpolate",
           ["linear"],
-          ["get", "avg_speed"],
+          ["to-number", ["get", "speed_1"]],
+          -1,
+          "#CCCCCC",
           0,
           "#440154",
           5,
@@ -103,7 +106,9 @@
         "fill-color": [
           "interpolate",
           ["linear"],
-          ["get", "avg_acceleration"],
+          ["to-number", ["get", "acceleration_1"]],
+          -1,
+          "#CCCCCC",
           0,
           "#440154",
           0.3125,
@@ -126,7 +131,7 @@
       }
     },
     {
-      "id": "density-heatmap",
+      "id": "freq-heatmap",
       "type": "fill",
       "source": "heatmap",
       "source-layer": "speed_hexmap",
@@ -138,18 +143,20 @@
         "fill-color": [
           "interpolate",
           ["linear"],
-          ["get", "density"],
+          ["/", ["to-number", ["get", "freq_1"]], ["to-number", ["get", "area"]]],
+          -1,
+          "#CCCCCC",
           0,
           "#002051",
-          10,
+          2,
           "#2b446e",
-          20,
+          4,
           "#696970",
-          30,
+          6,
           "#948f78",
-          40,
+          8,
           "#caba6a",
-          50,
+          10,
           "#fdea45"
         ]
       }

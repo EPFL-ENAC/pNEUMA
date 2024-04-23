@@ -18,3 +18,5 @@ CREATE INDEX idx_points_timestamp ON points (timestamp);
 CREATE INDEX idx_points_hex_id_13 ON points (hex_id_13);
 CREATE INDEX idx_points_hex_id_14 ON points (hex_id_14);
 CREATE INDEX idx_points_location ON points USING GIST (geom);
+
+CREATE INDEX idx_points_timestamp_vehicle_type ON points (timestamp, vehicle_type);

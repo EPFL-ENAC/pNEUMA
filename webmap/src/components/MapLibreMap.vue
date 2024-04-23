@@ -52,6 +52,7 @@ onMounted(() => {
     minZoom: props.minZoom,
     maxZoom: props.maxZoom
   })
+  // map.showTileBoundaries = true
   map.addControl(new NavigationControl({}))
   map.addControl(new GeolocateControl({}))
   map.addControl(new ScaleControl({}))
@@ -187,18 +188,29 @@ const changeSourceTilesUrl = (sourceId: string, url: string) => {
   source.setTiles([url])
 }
 
+const getSourceTilesUrl = (sourceId: string) => {
+  const source = map?.getSource(sourceId) as VectorTileSource
+  if (source && source.tiles) return source.tiles[0]
+  else return ''
+}
 const setLayerVisibility = (layerId: string, visibility: boolean) => {
   map?.setLayoutProperty(layerId, 'visibility', visibility ? 'visible' : 'none')
 }
 
+const getPaintProperty = (layerId: string, name: string) => {
+  return map?.getPaintProperty(layerId, name)
+}
+
 defineExpose({
+  getPaintProperty,
   update,
   setFilter,
   queryFeatures,
   setPaintProperty,
   onZoom,
   changeSourceTilesUrl,
-  setLayerVisibility
+  setLayerVisibility,
+  getSourceTilesUrl
 })
 
 watch(
