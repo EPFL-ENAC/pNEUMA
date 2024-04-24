@@ -27,6 +27,7 @@ const props = withDefaults(
     filterIds?: string[]
     popupLayerIds?: string[]
     areaLayerIds?: string[]
+    callbackLoaded?: () => void
   }>(),
   {
     center: undefined,
@@ -132,6 +133,9 @@ onMounted(() => {
         map.getCanvas().classList.remove('hovered-feature')
       }
     })
+    if (props.callbackLoaded !== undefined) {
+      props.callbackLoaded()
+    }
   })
   loading.value = false
 })

@@ -4,7 +4,7 @@ import type { Parameters } from '@/utils/jsonWebMap'
 import type { SelectableSingleItem } from '@/utils/layerSelector'
 import axios from 'axios'
 import type { ExpressionSpecification } from 'maplibre-gl'
-import { computed, onMounted, ref, shallowRef, triggerRef, watch } from 'vue'
+import { computed, ref, shallowRef, triggerRef, watch } from 'vue'
 
 const debounce = (fn: Function, ms = 300) => {
   let timeoutId: ReturnType<typeof setTimeout>
@@ -122,9 +122,9 @@ watch([vehiclesIds, filterSingleVehicle, vehicleId, timeRange, speedRange, selec
 })
 
 const baseHeatmapSourceUrl = ref<string>('')
-onMounted(() => {
+const callbackMapLoaded = () => {
   baseHeatmapSourceUrl.value = map.value?.getSourceTilesUrl('heatmap') ?? ''
-})
+}
 
 const createExpressionMaplibre = (minute_start: number, minute_end: number) => {}
 
@@ -269,6 +269,7 @@ watch(colorByProgression, (colorByProgression) => {
           :zoom="parameters.zoom"
           :max-zoom="19"
           :min-zoom="14"
+          :callback-loaded="callbackMapLoaded"
         />
       </v-col>
     </v-row>

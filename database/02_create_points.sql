@@ -9,14 +9,14 @@ CREATE TABLE points (
     hex_id_13 H3INDEX NOT NULL,
     hex_id_14 H3INDEX NOT NULL,
     geom GEOMETRY(Point, 4326) not null,
+    minute SMALLINT GENERATED ALWAYS AS ((timestamp / 60000) % 60) STORED,
     PRIMARY KEY (vehicle_id, timestamp)
 );
 
 -- Create indexes
 CREATE INDEX idx_points_vehicle_type ON points (vehicle_type);
-CREATE INDEX idx_points_timestamp ON points (timestamp);
 CREATE INDEX idx_points_hex_id_13 ON points (hex_id_13);
 CREATE INDEX idx_points_hex_id_14 ON points (hex_id_14);
 CREATE INDEX idx_points_location ON points USING GIST (geom);
 
-CREATE INDEX idx_points_timestamp_vehicle_type ON points (timestamp, vehicle_type);
+CREATE INDEX idx_points_minute ON points (minute);

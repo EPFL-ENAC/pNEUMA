@@ -1,13 +1,9 @@
--- drop function public.speed_hexmap(int4, int4, int4, json);
+-- DROP FUNCTION public.speed_hexmap(int4, int4, int4, json);
 
-CREATE OR REPLACE
-FUNCTION public.speed_hexmap(z integer,
-x integer,
-y integer,
-query_params JSON)
+CREATE OR REPLACE FUNCTION public.speed_hexmap(z integer, x integer, y integer, query_params json)
  RETURNS bytea
  LANGUAGE plpgsql
- IMMUTABLE PARALLEL safe STRICT
+ IMMUTABLE PARALLEL SAFE STRICT
 AS $function$
 DECLARE
   mvt bytea;
@@ -89,8 +85,8 @@ FROM
 ),
 minute_bins AS (
 SELECT
-	generate_series(time_bounds.time_min,
-	time_bounds.time_max) AS minute_bin
+	generate_series(time_bounds.time_min::integer,
+	time_bounds.time_max::integer) AS minute_bin
 FROM
 	time_bounds
 )
@@ -240,6 +236,8 @@ FROM
 				AND hexs.minute = p.minute
 			WHERE
 				p.geom && margin_tile_geom
+				AND ( vehicle_types is null  or p.vehicle_type = ANY(vehicle_types))
+ 
 			GROUP BY
 				hexs.hex_id,
 				hexs.geom,
