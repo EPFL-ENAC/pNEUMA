@@ -5,31 +5,18 @@
     "pneuma": {
       "type": "vector",
       "promoteId": "id",
-      "lineMetrics": true,
       "tilesDev": ["http://localhost/trajectories/{z}/{x}/{y}"],
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
-      "tiles": ["http://0.0.0.0:3000/trajectories/{z}/{x}/{y}"]
+      "tiles": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
+      "minzoom": 13,
+      "maxzoom": 19
     },
-    "points": {
-      "type": "vector",
-      "promoteId": "id",
-      "tilesDev": ["http://localhost/points/{z}/{x}/{y}"],
-      "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/points/{z}/{x}/{y}"],
-      "tiles": ["http://0.0.0.0:3000/points/{z}/{x}/{y}"]
-    },
-    "trajectories_points": {
-      "type": "vector",
-      "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/get_trajectories_points/{z}/{x}/{y}"],
-      "tilesDev": ["http://localhost/get_trajectories_points/{z}/{x}/{y}"],
-      "tiles": ["http://0.0.0.0:3000/get_trajectories_points/{z}/{x}/{y}"]
-    },
-
     "heatmap": {
       "type": "vector",
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
       "tilesDev": ["http://localhost/speed_hexmap/{z}/{x}/{y}"],
       "tiles": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
-      "minzoom": 13,
+      "minzoom": 14,
       "maxzoom": 17
     },
     "background": {
@@ -55,12 +42,53 @@
       }
     },
     {
+      "id": "trajectories",
+      "type": "line",
+      "source": "pneuma",
+      "source-layer": "trajectories",
+      "layout": {
+        "visibility": "visible"
+      },
+      "filter": ["!=", ["get", "id"], "0"],
+      "paint": {
+        "line-color": [
+          "interpolate",
+          ["linear"],
+          ["to-number", ["get", "speed"]],
+          -1,
+          "#CCCCCC",
+          0,
+          "#440154",
+          9,
+          "#482878",
+          18,
+          "#3e4989",
+          27,
+          "#31688e",
+          36,
+          "#26828e",
+          45,
+          "#1f9e89",
+          54,
+          "#35b779",
+          63,
+          "#6ece58",
+          72,
+          "#b5de2b",
+          80,
+          "#fde725"
+        ],
+        "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 8, 2],
+        "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.1]
+      }
+    },
+    {
       "id": "speed-heatmap",
       "type": "fill",
       "source": "heatmap",
       "source-layer": "speed_hexmap",
       "layout": {
-        "visibility": "visible"
+        "visibility": "none"
       },
       "paint": {
         "fill-opacity": 0.8,
@@ -161,101 +189,7 @@
         ]
       }
     },
-    {
-      "id": "vehicles",
-      "type": "line",
-      "source": "pneuma",
-      "source-layer": "trajectories",
-      "layout": {
-        "visibility": "none"
-      },
-      "paint": {
-        "line-color": [
-          "match",
-          ["get", "vehicle_type"],
-          "Taxi",
-          "#ff8c00",
-          "Bus",
-          "#ff0000",
-          "Heavy Vehicle",
-          "#483d8b",
-          "Medium Vehicle",
-          "#32cd32",
-          "Motorcycle",
-          "#ff69b4",
-          "Car",
-          "#007cbf",
-          "#000000"
-        ],
-        "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 8, 2],
-        "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.1]
-      }
-    },
 
-    {
-      "id": "positions",
-      "type": "circle",
-      "source": "trajectories_points",
-      "source-layer": "get_trajectories_points",
-      "layout": {
-        "visibility": "none"
-      },
-      "paint": {
-        "circle-color": [
-          "interpolate",
-          ["exponential", 1.2],
-          ["get", "avg_speed"],
-          0,
-          "#a50026",
-          10,
-          "#d6352c",
-          20,
-          "#f37547",
-          30,
-          "#fdbe70",
-          40,
-          "#fdefa5",
-          50,
-          "#fcf5ab",
-          60,
-          "#006837",
-          250,
-          "#006837"
-        ]
-      }
-    },
-    {
-      "id": "all_points",
-      "type": "circle",
-      "source": "points",
-      "source-layer": "points",
-      "layout": {
-        "visibility": "none"
-      },
-      "paint": {
-        "circle-color": [
-          "interpolate",
-          ["linear"],
-          ["get", "speed"],
-          0,
-          "#a50026",
-          10,
-          "#d6352c",
-          20,
-          "#f37547",
-          30,
-          "#fdbe70",
-          40,
-          "#fdefa5",
-          50,
-          "#fcf5ab",
-          60,
-          "#006837"
-        ],
-        "circle-radius": ["case", ["boolean", ["feature-state", "hover"], false], 6, 2],
-        "circle-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.0]
-      }
-    },
     {
       "id": "traffic_signals",
       "type": "symbol",

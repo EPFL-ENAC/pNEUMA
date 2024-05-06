@@ -163,7 +163,7 @@ const setFilter = (
   filter?: FilterSpecification | null | undefined,
   options?: StyleSetterOptions | undefined
 ) => {
-  throttle(() => map?.setFilter(layerId, filter, options), layerId, 100)
+  throttle(() => map?.setFilter(layerId, filter, options), layerId + '-filter', 100)
 }
 
 const setPaintProperty = (
@@ -172,7 +172,7 @@ const setPaintProperty = (
   value: any,
   options?: StyleSetterOptions | undefined
 ) => {
-  throttle(() => map?.setPaintProperty(layerId, name, value, options), layerId, 100)
+  throttle(() => map?.setPaintProperty(layerId, name, value, options), layerId + '-paint', 100)
 }
 
 const queryFeatures = (filter: any[]) => {
