@@ -96,7 +96,7 @@ function selectAll(value: boolean, children: string[][]) {
             :model-value="item.children.every((child) => selectedItems.includes(child.value))"
             @update:model-value="
               selectAll(
-                $event,
+                $event !== null ? $event : false,
                 item.children.map((child) => child.value)
               )
             "

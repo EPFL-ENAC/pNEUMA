@@ -1,18 +1,15 @@
 <script setup lang="ts">
+import CustomRangeSlider from '@/components/CustomRangeSlider.vue'
 import MapLibreMap from '@/components/MapLibreMap.vue'
 import type { Parameters } from '@/utils/jsonWebMap'
 import type { SelectableSingleItem } from '@/utils/layerSelector'
 import axios from 'axios'
 import type { ExpressionSpecification } from 'maplibre-gl'
 import { computed, ref, shallowRef, triggerRef, watch } from 'vue'
-
-const debounce = (fn: Function, ms = 300) => {
-  let timeoutId: ReturnType<typeof setTimeout>
-  return function (this: any, ...args: any[]) {
-    clearTimeout(timeoutId)
-    timeoutId = setTimeout(() => fn.apply(this, args), ms)
-  }
-}
+import {
+  createExpressionAverageSpeed,
+  createExpressionAverageFreq
+} from '@/utils/expressionMaplibre'
 
 const isHexmapSelected = ref<boolean>(false)
 
@@ -47,15 +44,11 @@ const filterIds = computed<string[]>(() => [
 
 const colorByProgression = ref<boolean>(false)
 
-const filterTrajectoriesByTime = ref<boolean>(false)
 const filterSingleVehicle = ref<boolean>(false)
 
 const heatmapSelection = ref<string>('speed')
-const vehiclesIds = ref<number[]>([0, 10000])
-const timeRange = ref<number>(1)
+const timeRange = ref<[number, number]>([0, 20000])
 
-const speedRange = ref<number[]>([0, 100])
-const vehicleId = ref<number>(1)
 const vehicleTypes = ['Taxi', 'Bus', 'Heavy Vehicle', 'Medium Vehicle', 'Motorcycle', 'Car']
 const selectedTypes = ref<string[]>(vehicleTypes)
 
@@ -107,16 +100,15 @@ const getTypeFilter = (): ExpressionSpecification => {
 }
 
 const getFilter = (): ExpressionSpecification => {
-  const t0 = timeRange.value * 60 * 1000
-  const t1 = t0 + 60 * 1000
+  const t0 = timeRange.value[0]
+  const t1 = timeRange.value[1] // 10 seconds time window
 
   let filter: ExpressionSpecification = ['all', getTypeFilter()]
 
-  if (filterTrajectoriesByTime.value)
-    filter = filter.concat([
-      ...getRangeFilter('t0', [t0, t1]),
-      ...getRangeFilter('t1', [t0, t1])
-    ]) as ExpressionSpecification
+  filter = filter.concat([
+    ...getRangeFilter('t0', [t0, t1]),
+    ...getRangeFilter('t1', [t0, t1])
+  ]) as ExpressionSpecification
 
   return filter
 }
@@ -126,83 +118,85 @@ const callbackMapLoaded = () => {
   baseHeatmapSourceUrl.value = map.value?.getSourceTilesUrl('heatmap') ?? ''
 }
 
-watch(
-  [timeRange, heatmapSelection, isHexmapSelected, selectedTypes, filterTrajectoriesByTime],
-  () => {
-    //For hexmap
-    const category = heatmapSelection.value
-    const propertyName = category + '_' + timeRange.value
+watch([timeRange, heatmapSelection, isHexmapSelected, selectedTypes], () => {
+  //For hexmap
+  const category = heatmapSelection.value
+  const propertyName = category + '_' + timeRange.value
 
-    const currentFillColor = map.value?.getPaintProperty(category + '-heatmap', 'fill-color')
+  const currentFillColor = map.value?.getPaintProperty(category + '-heatmap', 'fill-color')
 
-    if (currentFillColor && Array.isArray(currentFillColor) && currentFillColor.length > 3) {
-      if (category == 'freq')
-        currentFillColor[2] = [
-          'coalesce',
-          ['/', ['to-number', ['get', propertyName]], ['to-number', ['get', 'area']]],
-          -1
-        ]
-      else currentFillColor[2] = ['to-number', ['coalesce', ['get', propertyName], -1]]
+  if (currentFillColor && Array.isArray(currentFillColor) && currentFillColor.length > 3) {
+    if (category == 'freq')
+      currentFillColor[2] = createExpressionAverageFreq(
+        timeRange.value[0],
+        timeRange.value[1],
+        10000
+      )
+    else
+      currentFillColor[2] = createExpressionAverageSpeed(
+        timeRange.value[0],
+        timeRange.value[1],
+        10000
+      )
 
-      map.value?.setPaintProperty(category + '-heatmap', 'fill-color', currentFillColor)
-    }
-
-    //For trajectories
-    const currentLineColor = map.value?.getPaintProperty('trajectories', 'line-color')
-    if (currentLineColor && Array.isArray(currentLineColor) && currentLineColor.length > 3) {
-      currentLineColor[2] = ['to-number', ['get', category]]
-      const newLineColor =
-        category == 'acceleration'
-          ? [
-              'interpolate',
-              ['linear'],
-              ['to-number', ['get', 'acceleration']],
-              -1,
-              '#542788',
-              -0.5,
-              '#998ec3',
-              -0.1,
-              '#d8daeb',
-              0.1,
-              '#fee0b6',
-              0.5,
-              '#f1a340',
-              1,
-              '#b35806'
-            ]
-          : [
-              'interpolate',
-              ['linear'],
-              ['to-number', ['get', 'speed']],
-              -1,
-              '#CCCCCC',
-              0,
-              '#440154',
-              9,
-              '#482878',
-              18,
-              '#3e4989',
-              27,
-              '#31688e',
-              36,
-              '#26828e',
-              45,
-              '#1f9e89',
-              54,
-              '#35b779',
-              63,
-              '#6ece58',
-              72,
-              '#b5de2b',
-              80,
-              '#fde725'
-            ]
-
-      map.value?.setPaintProperty('trajectories', 'line-color', newLineColor)
-      map.value?.setFilter('trajectories', getFilter())
-    }
+    map.value?.setPaintProperty(category + '-heatmap', 'fill-color', currentFillColor)
   }
-)
+
+  //For trajectories
+  const currentLineColor = map.value?.getPaintProperty('trajectories', 'line-color')
+  if (currentLineColor && Array.isArray(currentLineColor) && currentLineColor.length > 3) {
+    currentLineColor[2] = ['to-number', ['get', category]]
+    const newLineColor =
+      category == 'acceleration'
+        ? [
+            'interpolate',
+            ['linear'],
+            ['to-number', ['get', 'acceleration']],
+            -1,
+            '#542788',
+            -0.5,
+            '#998ec3',
+            -0.1,
+            '#d8daeb',
+            0.1,
+            '#fee0b6',
+            0.5,
+            '#f1a340',
+            1,
+            '#b35806'
+          ]
+        : [
+            'interpolate',
+            ['linear'],
+            ['to-number', ['get', 'speed']],
+            -1,
+            '#CCCCCC',
+            0,
+            '#440154',
+            9,
+            '#482878',
+            18,
+            '#3e4989',
+            27,
+            '#31688e',
+            36,
+            '#26828e',
+            45,
+            '#1f9e89',
+            54,
+            '#35b779',
+            63,
+            '#6ece58',
+            72,
+            '#b5de2b',
+            80,
+            '#fde725'
+          ]
+
+    map.value?.setPaintProperty('trajectories', 'line-color', newLineColor)
+    map.value?.setFilter('trajectories', getFilter())
+  }
+})
 
 const heatmapSourceUrl = computed(() => {
   // return `https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}?vehicle_types=${JSON.stringify(
@@ -259,22 +253,15 @@ watch([heatmapSelection, isHexmapSelected], ([heatmapSelection, isHexmapSelected
         <v-card>
           <v-card-title> Time range in seconds </v-card-title>
           <v-card-text>
-            <v-slider
+            <custom-range-slider
               v-model="timeRange"
-              hide-details
-              :min="1"
-              :max="14"
-              :step="1"
+              :min="0"
+              :max="20 * 60 * 1000"
+              :step="10 * 1000"
               density="compact"
+              strict
               thumb-label
-            ></v-slider>
-            <v-checkbox
-              v-model="filterTrajectoriesByTime"
-              hide-details
-              :disabled="isHexmapSelected"
-              :indeterminate="isHexmapSelected"
-              label="Filter trajectories by time"
-            ></v-checkbox>
+            ></custom-range-slider>
           </v-card-text>
         </v-card>
         <v-card>
@@ -304,7 +291,7 @@ watch([heatmapSelection, isHexmapSelected], ([heatmapSelection, isHexmapSelected
           :popup-layer-ids="parameters.popupLayerIds"
           :zoom="parameters.zoom"
           :max-zoom="20"
-          :min-zoom="13"
+          :min-zoom="14"
           :callback-loaded="callbackMapLoaded"
         />
       </v-col>

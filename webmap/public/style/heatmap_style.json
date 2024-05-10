@@ -4,11 +4,11 @@
   "sources": {
     "pneuma": {
       "type": "vector",
-      "promoteId": "id",
+      "promoteId": "vehicle_id",
       "tilesDev": ["http://localhost/trajectories/{z}/{x}/{y}"],
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
       "tiles": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
-      "minzoom": 13,
+      "minzoom": 14,
       "maxzoom": 19
     },
     "heatmap": {
@@ -17,7 +17,7 @@
       "tilesDev": ["http://localhost/speed_hexmap/{z}/{x}/{y}"],
       "tiles": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
       "minzoom": 14,
-      "maxzoom": 17
+      "maxzoom": 19
     },
     "background": {
       "tileSize": 256,
@@ -50,6 +50,7 @@
         "visibility": "visible"
       },
       "filter": ["!=", ["get", "id"], "0"],
+      "line-cap": "round",
       "paint": {
         "line-color": [
           "interpolate",
@@ -78,7 +79,7 @@
           80,
           "#fde725"
         ],
-        "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 8, 2],
+        "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 6, 2],
         "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.1]
       }
     },
@@ -174,17 +175,18 @@
           ["/", ["to-number", ["get", "freq_1"]], ["to-number", ["get", "area"]]],
           -1,
           "#CCCCCC",
+
           0,
           "#002051",
-          2,
+          0.3,
           "#2b446e",
-          4,
+          0.6,
           "#696970",
-          6,
+          0.9,
           "#948f78",
-          8,
+          1.2,
           "#caba6a",
-          10,
+          1.5,
           "#fdea45"
         ]
       }
