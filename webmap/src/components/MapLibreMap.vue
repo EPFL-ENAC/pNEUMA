@@ -164,7 +164,7 @@ const setPaintProperty = (
 const queryFeatures = (filter: any[]) => {
   return map?.querySourceFeatures('pneuma', {
     sourceLayer: 'trajectories',
-    filter,
+    filter: filter as FilterSpecification,
     validate: false
   })
 }

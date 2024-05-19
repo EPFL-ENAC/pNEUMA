@@ -94,21 +94,21 @@ const testValue = defineModel<[number, number]>({ required: true })
   position: relative;
 }
 
-::v-deep .slider-styled {
+:deep() .slider-styled {
   height: 10px;
   padding: 0 7px;
 }
 
-::v-deep .noUi-handle:before,
-::v-deep .noUi-handle:after {
+:deep() .noUi-handle:before,
+:deep() .noUi-handle:after {
   display: none;
 }
 
-::v-deep .slider-styled .noUi-connect {
+:deep() .slider-styled .noUi-connect {
   background: rgb(var(--v-theme-surface-variant));
 }
 
-::v-deep .slider-styled .noUi-handle {
+:deep() .slider-styled .noUi-handle {
   height: 18px;
   width: 18px;
   top: -5px;
@@ -116,10 +116,10 @@ const testValue = defineModel<[number, number]>({ required: true })
   border-radius: 9px;
 }
 
-::v-deep .noUi-tooltip {
+:deep() .noUi-tooltip {
   display: none;
 }
-::v-deep .noUi-active .noUi-tooltip {
+:deep() .noUi-active .noUi-tooltip {
   display: block;
 }
 </style>
