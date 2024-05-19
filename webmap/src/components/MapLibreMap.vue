@@ -78,7 +78,15 @@ onMounted(() => {
       if (map) map.getCanvas().classList.remove('hovered-feature')
     })
 
-    map?.on('click', 'vehicles', function (e) {})
+    map?.on('click', 'speed-heatmap', function (e) {
+      if (map) {
+        const features = map.queryRenderedFeatures(e.point)
+        if (features.length > 0) {
+          const feature = features[0]
+          console.log(feature?.properties)
+        }
+      }
+    })
 
     map?.on('mousemove', 'trajectories', function (e) {
       const features = e.features
@@ -161,6 +169,10 @@ const queryFeatures = (filter: any[]) => {
   })
 }
 
+const queryRenderedFeatures = () => {
+  return map?.queryRenderedFeatures()
+}
+
 const onZoom = (callback: () => void) => {
   map?.on('zoom', callback)
 }
@@ -188,6 +200,7 @@ defineExpose({
   update,
   setFilter,
   queryFeatures,
+  queryRenderedFeatures,
   setPaintProperty,
   onZoom,
   changeSourceTilesUrl,
@@ -269,7 +282,7 @@ function filterLayers(filterIds?: string[]) {
 
 <template>
   <v-progress-linear v-if="loading" active color="primary" indeterminate />
-  <v-responsive :aspect-ratio="aspectRatio" height="100%">
+  <v-responsive :aspect-ratio="aspectRatio" height="85%">
     <div id="maplibre-map" />
   </v-responsive>
 </template>

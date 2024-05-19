@@ -11,11 +11,13 @@ import {
   createExpressionAverageFreq
 } from '@/utils/expressionMaplibre'
 
+import metadata from '@/utils/metadata'
+
 const isHexmapSelected = ref<boolean>(false)
 
 watch(isHexmapSelected, (isHexmapSelected) => {
-  if (isHexmapSelected && heatmapSelection.value == 'acceleration') heatmapSelection.value = 'speed'
-  else if (!isHexmapSelected && heatmapSelection.value == 'freq') heatmapSelection.value = 'speed'
+  if (isHexmapSelected && hexmapSelection.value == 'acceleration') hexmapSelection.value = 'speed'
+  else if (!isHexmapSelected && hexmapSelection.value == 'freq') hexmapSelection.value = 'speed'
 })
 
 const props = defineProps<{
@@ -42,12 +44,15 @@ const filterIds = computed<string[]>(() => [
   ...(filterSingleVehicle.value ? ['ghost'] : [])
 ])
 
-const colorByProgression = ref<boolean>(false)
-
 const filterSingleVehicle = ref<boolean>(false)
 
-const heatmapSelection = ref<string>('speed')
-const timeRange = ref<[number, number]>([0, 20000])
+const hexmapSelection = ref<string>('speed')
+const trajectoriesSelection = ref<string>('speed')
+
+const timeRange = ref<[number, number]>([
+  metadata.trajectories['20181024_0830_0900'].tMin,
+  metadata.trajectories['20181024_0830_0900'].tMax
+])
 
 const vehicleTypes = ['Taxi', 'Bus', 'Heavy Vehicle', 'Medium Vehicle', 'Motorcycle', 'Car']
 const selectedTypes = ref<string[]>(vehicleTypes)
@@ -118,15 +123,121 @@ const callbackMapLoaded = () => {
   baseHeatmapSourceUrl.value = map.value?.getSourceTilesUrl('heatmap') ?? ''
 }
 
-watch([timeRange, heatmapSelection, isHexmapSelected, selectedTypes], () => {
-  //For hexmap
-  const category = heatmapSelection.value
-  const propertyName = category + '_' + timeRange.value
+const setPaintTrajectories = (selection: string) => {
+  const currentLineColor = map.value?.getPaintProperty('trajectories', 'line-color')
 
-  const currentFillColor = map.value?.getPaintProperty(category + '-heatmap', 'fill-color')
+  if (currentLineColor && Array.isArray(currentLineColor) && currentLineColor.length > 3) {
+    let newLineColor = []
+    switch (selection) {
+      case 'acceleration':
+        newLineColor = [
+          'interpolate',
+          ['linear'],
+          ['to-number', ['get', 'acceleration']],
+          -1,
+          '#542788',
+          -0.5,
+          '#998ec3',
+          -0.1,
+          '#d8daeb',
+          0.1,
+          '#fee0b6',
+          0.5,
+          '#f1a340',
+          1,
+          '#b35806'
+        ]
+        break
+      case 'speed':
+        newLineColor = [
+          'interpolate',
+          ['linear'],
+          ['to-number', ['get', 'speed']],
+          -1,
+          '#CCCCCC',
+          0,
+          '#440154',
+          9,
+          '#482878',
+          18,
+          '#3e4989',
+          27,
+          '#31688e',
+          36,
+          '#26828e',
+          45,
+          '#1f9e89',
+          54,
+          '#35b779',
+          63,
+          '#6ece58',
+          72,
+          '#b5de2b',
+          80,
+          '#fde725'
+        ]
+        break
+
+      case 'progression':
+        newLineColor = [
+          'interpolate',
+          ['linear'],
+          ['to-number', ['get', 'progression']],
+          0,
+          '#440154',
+          10,
+          '#482878',
+          20,
+          '#3e4989',
+          30,
+          '#31688e',
+          40,
+          '#26828e',
+          50,
+          '#1f9e89',
+          60,
+          '#35b779',
+          70,
+          '#6ece58',
+          80,
+          '#b5de2b',
+          90,
+          '#fde725',
+          100,
+          '#fde725'
+        ]
+        break
+      case 'vehicle_type':
+        newLineColor = [
+          'match',
+          ['get', 'vehicle_type'],
+          'Taxi',
+          '#1f77b4',
+          'Car',
+          '#ff7f0e',
+          'Motorcycle',
+          '#2ca02c',
+          'Medium Vehicle',
+          '#d62728',
+          'Heavy Vehicle',
+          '#9467bd',
+          'Bus',
+          '#8c564b',
+          '#CCCCCC'
+        ]
+        break
+      default:
+        newLineColor = currentLineColor
+    }
+    map.value?.setPaintProperty('trajectories', 'line-color', newLineColor)
+  }
+}
+
+const setPaintHexmap = (selection: string) => {
+  const currentFillColor = map.value?.getPaintProperty(selection + '-heatmap', 'fill-color')
 
   if (currentFillColor && Array.isArray(currentFillColor) && currentFillColor.length > 3) {
-    if (category == 'freq')
+    if (selection == 'freq')
       currentFillColor[2] = createExpressionAverageFreq(
         timeRange.value[0],
         timeRange.value[1],
@@ -139,62 +250,18 @@ watch([timeRange, heatmapSelection, isHexmapSelected, selectedTypes], () => {
         10000
       )
 
-    map.value?.setPaintProperty(category + '-heatmap', 'fill-color', currentFillColor)
+    map.value?.setPaintProperty(selection + '-heatmap', 'fill-color', currentFillColor)
   }
+}
 
-  //For trajectories
-  const currentLineColor = map.value?.getPaintProperty('trajectories', 'line-color')
-  if (currentLineColor && Array.isArray(currentLineColor) && currentLineColor.length > 3) {
-    currentLineColor[2] = ['to-number', ['get', category]]
-    const newLineColor =
-      category == 'acceleration'
-        ? [
-            'interpolate',
-            ['linear'],
-            ['to-number', ['get', 'acceleration']],
-            -1,
-            '#542788',
-            -0.5,
-            '#998ec3',
-            -0.1,
-            '#d8daeb',
-            0.1,
-            '#fee0b6',
-            0.5,
-            '#f1a340',
-            1,
-            '#b35806'
-          ]
-        : [
-            'interpolate',
-            ['linear'],
-            ['to-number', ['get', 'speed']],
-            -1,
-            '#CCCCCC',
-            0,
-            '#440154',
-            9,
-            '#482878',
-            18,
-            '#3e4989',
-            27,
-            '#31688e',
-            36,
-            '#26828e',
-            45,
-            '#1f9e89',
-            54,
-            '#35b779',
-            63,
-            '#6ece58',
-            72,
-            '#b5de2b',
-            80,
-            '#fde725'
-          ]
+watch([timeRange, hexmapSelection, trajectoriesSelection, isHexmapSelected, selectedTypes], () => {
+  //For hexmap
+  const category = hexmapSelection.value
 
-    map.value?.setPaintProperty('trajectories', 'line-color', newLineColor)
+  if (isHexmapSelected.value) setPaintHexmap(category)
+  else {
     map.value?.setFilter('trajectories', getFilter())
+    setPaintTrajectories(trajectoriesSelection.value)
   }
 })
 
@@ -206,11 +273,11 @@ watch(heatmapSourceUrl, (newUrl, oldUrl) => {
   if (newUrl !== oldUrl) map.value?.changeSourceTilesUrl('heatmap', newUrl)
 })
 
-watch([heatmapSelection, isHexmapSelected], ([heatmapSelection, isHexmapSelected]) => {
+watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected]) => {
   if (isHexmapSelected) {
-    map.value?.setLayerVisibility('freq-heatmap', heatmapSelection === 'freq')
-    map.value?.setLayerVisibility('speed-heatmap', heatmapSelection === 'speed')
-    map.value?.setLayerVisibility('acceleration-heatmap', heatmapSelection === 'acceleration')
+    map.value?.setLayerVisibility('freq-heatmap', hexmapSelection === 'freq')
+    map.value?.setLayerVisibility('speed-heatmap', hexmapSelection === 'speed')
+    map.value?.setLayerVisibility('acceleration-heatmap', hexmapSelection === 'acceleration')
     map.value?.setLayerVisibility('trajectories', false)
   } else {
     map.value?.setLayerVisibility('freq-heatmap', false)
@@ -224,7 +291,7 @@ watch([heatmapSelection, isHexmapSelected], ([heatmapSelection, isHexmapSelected
 <template>
   <v-container class="fill-height pa-0" fluid>
     <v-row class="fill-height">
-      <v-col cols="12" md="3" sm="6" class="pl-6">
+      <v-col cols="12" md="2" sm="6" class="pl-6">
         <v-card>
           <v-card-title> Map type selection </v-card-title>
           <v-card-text>
@@ -251,38 +318,23 @@ watch([heatmapSelection, isHexmapSelected], ([heatmapSelection, isHexmapSelected
         </v-card>
 
         <v-card>
-          <v-card-title> Time range in seconds </v-card-title>
-          <v-card-text>
-            <custom-range-slider
-              v-model="timeRange"
-              :min="0"
-              :max="20 * 60 * 1000"
-              :step="10 * 1000"
-              density="compact"
-              strict
-              thumb-label
-            ></custom-range-slider>
-          </v-card-text>
-        </v-card>
-        <v-card>
           <v-card-title>Color encoding</v-card-title>
           <v-card-text>
-            <v-radio-group v-model="heatmapSelection">
-              <v-radio label="Density" value="freq" :disabled="!isHexmapSelected"></v-radio>
+            <v-radio-group v-if="isHexmapSelected" v-model="hexmapSelection">
+              <v-radio label="Density" value="freq"></v-radio>
               <v-radio label="Speed" value="speed"></v-radio>
-              <v-radio
-                label="Acceleration"
-                value="acceleration"
-                :disabled="isHexmapSelected"
-              ></v-radio>
+            </v-radio-group>
+            <v-radio-group v-else v-model="trajectoriesSelection">
+              <v-radio label="Speed" value="speed"></v-radio>
+              <v-radio label="Acceleration" value="acceleration"></v-radio>
+              <v-radio label="Progression" value="progression"></v-radio>
+              <v-radio label="Vehicle type" value="vehicle_type"></v-radio>
             </v-radio-group>
           </v-card-text>
         </v-card>
-
-        <v-divider class="border-opacity-100 mx-n3" />
       </v-col>
       <v-divider class="border-opacity-100" vertical />
-      <v-col cols="12" md="9" sm="6" class="py-0 pl-0">
+      <v-col cols="12" md="10" sm="6" class="py-0 pl-0">
         <MapLibreMap
           ref="map"
           :center="parameters.center"
@@ -294,6 +346,20 @@ watch([heatmapSelection, isHexmapSelected], ([heatmapSelection, isHexmapSelected
           :min-zoom="14"
           :callback-loaded="callbackMapLoaded"
         />
+        <v-divider class="border-opacity-100" />
+
+        <v-card class="px-6">
+          <v-card-title> Time range in seconds </v-card-title>
+          <v-card-text>
+            <custom-range-slider
+              v-model="timeRange"
+              :min="metadata.trajectories['20181024_0830_0900'].tMin"
+              :max="metadata.trajectories['20181024_0830_0900'].tMax"
+              :step="metadata.hexmapTimeBinMs"
+              :start-date="metadata.trajectories['20181024_0830_0900'].dateStart"
+            ></custom-range-slider>
+          </v-card-text>
+        </v-card>
       </v-col>
     </v-row>
   </v-container>

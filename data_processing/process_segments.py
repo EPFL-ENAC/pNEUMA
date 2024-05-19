@@ -3,6 +3,7 @@ from decimal import Decimal
 import time
 import pandas as pd
 import geopandas as gpd
+import numpy as np
 import movingpandas as mpd
 import concurrent.futures
 
@@ -37,14 +38,7 @@ def generalize_trajectories(trajectories, num_splits, tolerance_meters):
 
 def calculate_progression(group):
     num_segments = len(group)
-    progression = [((i + 1) / num_segments) * 100 for i in range(num_segments)]
-    group['progression'] = pd.Series(progression, index=group.index).astype(int)
-    return group
-
-def calculate_segment_index(group):
-    num_segments = len(group)
-    segment_index = [i + 1 for i in range(num_segments)]  # Start counting segments from 1
-    group['segment_index'] = pd.Series(segment_index, index=group.index)
+    group['progression'] = np.linspace(0, 100, num_segments).astype(int)
     return group
 
 
@@ -54,7 +48,7 @@ def wrangle_gdf(gdf,res):
     gdf.rename(columns={'timestamp':'t1','geometry':'geom'},inplace=True)
     gdf.drop(['t','prev_t'],axis=1,inplace=True)
     gdf['segment_index'] = gdf.groupby('vehicle_id',sort=True).cumcount()+1
-
+    gdf = gdf.groupby('vehicle_id',sort=True).apply(calculate_progression).reset_index(drop=True)
     gdf['speed'] = gdf['speed'].astype(int)
     gdf['acceleration'] = gdf['acceleration'].apply(lambda x: Decimal("{:.2f}".format(x)).normalize())
     gdf['res'] = Decimal(res).normalize()
