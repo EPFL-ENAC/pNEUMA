@@ -39,6 +39,18 @@ const formatter = {
   }
 }
 
+const formatterTooltip = {
+  to: (value: number) => {
+    const date = new Date((props.startDate?.getTime() || 0) + value)
+    // console.log(value, props.startDate?.getTime(), date.getMinutes())
+    return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  },
+  from: (value: string) => {
+    // console.log(value)
+    return Number(value)
+  }
+}
+
 const filterPips = (value: number, type: PipsType) => {
   console.log(value)
   if (value % (1000 * 60 * 10) === 0) return 1
@@ -51,7 +63,7 @@ onMounted(() => {
   if (sliderHTML.value) {
     slider.value = noUiSlider.create(sliderHTML.value, {
       start: [props.min, props.max],
-      tooltips: [formatter, formatter],
+      tooltips: [formatterTooltip, formatterTooltip],
       connect: true,
       behaviour: 'drag',
       step: props.step || 1,
@@ -102,5 +114,12 @@ const testValue = defineModel<[number, number]>({ required: true })
   top: -5px;
   right: -9px; /* half the width */
   border-radius: 9px;
+}
+
+::v-deep .noUi-tooltip {
+  display: none;
+}
+::v-deep .noUi-active .noUi-tooltip {
+  display: block;
 }
 </style>
