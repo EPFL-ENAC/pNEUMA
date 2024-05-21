@@ -55,6 +55,24 @@ const timeRange = ref<[number, number]>([
 ])
 
 const vehicleTypes = ['Taxi', 'Bus', 'Heavy Vehicle', 'Medium Vehicle', 'Motorcycle', 'Car']
+const toVehicleTypeShort = (vehicleType: string) => {
+  switch (vehicleType) {
+    case 'Taxi':
+      return 'T'
+    case 'Bus':
+      return 'B'
+    case 'Heavy Vehicle':
+      return 'HV'
+    case 'Medium Vehicle':
+      return 'MV'
+    case 'Motorcycle':
+      return 'M'
+    case 'Car':
+      return 'C'
+    default:
+      return vehicleType
+  }
+}
 const selectedTypes = ref<string[]>(vehicleTypes)
 
 const legendItems = computed(() =>
@@ -241,13 +259,15 @@ const setPaintHexmap = (selection: string) => {
       currentFillColor[2] = createExpressionAverageFreq(
         timeRange.value[0],
         timeRange.value[1],
-        10000
+        10000,
+        selectedTypes.value.map(toVehicleTypeShort)
       )
     else
       currentFillColor[2] = createExpressionAverageSpeed(
         timeRange.value[0],
         timeRange.value[1],
-        10000
+        10000,
+        selectedTypes.value.map(toVehicleTypeShort)
       )
 
     map.value?.setPaintProperty(selection + '-heatmap', 'fill-color', currentFillColor)
@@ -263,14 +283,6 @@ watch([timeRange, hexmapSelection, trajectoriesSelection, isHexmapSelected, sele
     map.value?.setFilter('trajectories', getFilter())
     setPaintTrajectories(trajectoriesSelection.value)
   }
-})
-
-const heatmapSourceUrl = computed(() => {
-  // return `https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}?vehicle_types=${JSON.stringify(
-  return baseHeatmapSourceUrl.value + `?vehicle_types=${JSON.stringify(selectedTypes.value)}`
-})
-watch(heatmapSourceUrl, (newUrl, oldUrl) => {
-  if (newUrl !== oldUrl) map.value?.changeSourceTilesUrl('heatmap', newUrl)
 })
 
 watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected]) => {
