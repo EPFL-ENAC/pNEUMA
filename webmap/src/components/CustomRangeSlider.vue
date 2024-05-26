@@ -30,11 +30,9 @@ const sliderHTML = ref<HTMLDivElement | null>(null)
 const formatter = {
   to: (value: number) => {
     const date = new Date((props.startDate?.getTime() || 0) + value)
-    // console.log(value, props.startDate?.getTime(), date.getMinutes())
     return `${date.getHours()}:${date.getMinutes()}`
   },
   from: (value: string) => {
-    // console.log(value)
     return Number(value)
   }
 }
@@ -42,17 +40,14 @@ const formatter = {
 const formatterTooltip = {
   to: (value: number) => {
     const date = new Date((props.startDate?.getTime() || 0) + value)
-    // console.log(value, props.startDate?.getTime(), date.getMinutes())
     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
   },
   from: (value: string) => {
-    // console.log(value)
     return Number(value)
   }
 }
 
 const filterPips = (value: number, type: PipsType) => {
-  console.log(value)
   if (value % (1000 * 60 * 10) === 0) return 1
   else if (value % (1000 * 60) === 0) return 2
   else if (value % (1000 * 10) === 0) return 0
@@ -65,7 +60,7 @@ onMounted(() => {
       start: [props.min, props.max],
       tooltips: [formatterTooltip, formatterTooltip],
       connect: true,
-      behaviour: 'drag',
+      behaviour: 'drag-snap',
       step: props.step || 1,
       range: {
         min: props.min,
@@ -92,6 +87,14 @@ const testValue = defineModel<[number, number]>({ required: true })
 .drag-icon {
   cursor: pointer;
   position: relative;
+}
+
+:deep() .noUi-value {
+  padding-top: 3px;
+}
+
+:deep() .noUi-value-sub {
+  padding-top: 2px;
 }
 
 :deep() .slider-styled {

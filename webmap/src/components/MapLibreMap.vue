@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import 'maplibre-gl/dist/maplibre-gl.css'
+import LoadingCircle from './LoadingCircle.vue'
 
 import {
   FullscreenControl,
@@ -11,6 +12,7 @@ import {
   VectorTileSource,
   type FilterSpecification,
   type LngLatLike,
+  type MapSourceDataEvent,
   type StyleSetterOptions,
   type StyleSpecification
 } from 'maplibre-gl'
@@ -42,11 +44,13 @@ const props = withDefaults(
 )
 
 const loading = ref(true)
+const container = ref<HTMLDivElement | null>(null)
 let map: Maplibre | undefined = undefined
+const hasLoaded = ref(false)
 
 onMounted(() => {
   map = new Maplibre({
-    container: 'maplibre-map',
+    container: container.value as HTMLDivElement,
     style: props.styleSpec,
     center: props.center,
     zoom: props.zoom,
@@ -66,8 +70,19 @@ onMounted(() => {
   map.once('load', () => {
     // filterLayers(props.filterIds)
     if (!map) return
+    hasLoaded.value = true
+    loading.value = false
 
-    map?.on('mouseleave', 'trajectories', () => {
+    map.on('sourcedata', (e: MapSourceDataEvent) => {
+      console.log('sourcedata', e)
+      if (e.isSourceLoaded) loading.value = false
+    })
+
+    map.on('sourcedataloading', () => {
+      loading.value = true
+    })
+
+    map.on('mouseleave', 'trajectories', () => {
       if (hoveredStateId) {
         map?.setFeatureState(
           { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
@@ -78,17 +93,7 @@ onMounted(() => {
       if (map) map.getCanvas().classList.remove('hovered-feature')
     })
 
-    map?.on('click', 'speed-heatmap', function (e) {
-      if (map) {
-        const features = map.queryRenderedFeatures(e.point)
-        if (features.length > 0) {
-          const feature = features[0]
-          console.log(feature?.properties)
-        }
-      }
-    })
-
-    map?.on('mousemove', 'trajectories', function (e) {
+    map.on('mousemove', 'trajectories', function (e) {
       const features = e.features
       if (features && features.length > 0 && map) {
         map.getCanvas().classList.add('hovered-feature')
@@ -149,7 +154,9 @@ const setFilter = (
   filter?: FilterSpecification | null | undefined,
   options?: StyleSetterOptions | undefined
 ) => {
-  throttle(() => map?.setFilter(layerId, filter, options), layerId + '-filter', 100)
+  if (hasLoaded.value) {
+    throttle(() => map?.setFilter(layerId, filter, options), layerId + '-filter', 100)
+  }
 }
 
 const setPaintProperty = (
@@ -158,7 +165,8 @@ const setPaintProperty = (
   value: any,
   options?: StyleSetterOptions | undefined
 ) => {
-  throttle(() => map?.setPaintProperty(layerId, name, value, options), layerId + '-paint', 100)
+  if (hasLoaded.value)
+    throttle(() => map?.setPaintProperty(layerId, name, value, options), layerId + '-paint', 100)
 }
 
 const queryFeatures = (filter: any[]) => {
@@ -192,7 +200,7 @@ const setLayerVisibility = (layerId: string, visibility: boolean) => {
 }
 
 const getPaintProperty = (layerId: string, name: string) => {
-  return map?.getPaintProperty(layerId, name)
+  if (hasLoaded.value) return map?.getPaintProperty(layerId, name)
 }
 
 defineExpose({
@@ -281,18 +289,21 @@ function filterLayers(filterIds?: string[]) {
 </script>
 
 <template>
-  <v-progress-linear v-if="loading" active color="primary" indeterminate />
-  <v-responsive :aspect-ratio="aspectRatio" height="85%">
-    <div id="maplibre-map" />
-  </v-responsive>
+  <v-container class="pa-0 fill-height" fluid>
+    <div ref="container" class="map fill-height">
+      <loading-circle :loading="loading" />
+    </div>
+  </v-container>
 </template>
 
 <style scoped>
-#maplibre-map {
+.map {
   height: 100%;
+  width: 100%;
+  position: relative;
 }
 
-#maplibre-map:deep(.hovered-feature) {
+.map:deep(.hovered-feature) {
   cursor: pointer !important;
 }
 </style>
