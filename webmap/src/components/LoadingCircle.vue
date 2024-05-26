@@ -10,18 +10,9 @@
 </template>
 
 <script lang="ts" setup>
-import { watch } from 'vue'
-
 const props = defineProps<{
   loading: boolean
 }>()
-
-watch(
-  () => props.loading,
-  (loading) => {
-    console.log('Loading change value to ', loading)
-  }
-)
 </script>
 
 <style scoped>

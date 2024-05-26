@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import CustomRangeSlider from '@/components/CustomRangeSlider.vue'
 import MapLibreMap from '@/components/MapLibreMap.vue'
+import LegendMap from '@/components/LegendMap.vue'
+
 import type { Parameters } from '@/utils/jsonWebMap'
 import type { SelectableSingleItem } from '@/utils/layerSelector'
 import axios from 'axios'
@@ -368,6 +370,7 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
           :callback-loaded="callbackMapLoaded"
           class="flex-grow-1"
         />
+        <legend-map></legend-map>
         <v-divider class="border-opacity-100" />
 
         <v-card flat class="mt-auto pb-4 px-4">

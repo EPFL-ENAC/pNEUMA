@@ -39,7 +39,6 @@ const createExpressionAverageFreq = (
   step: number,
   vehicle_types: string[]
 ) => {
-  console.log('createExpressionAverageFreq', tMin, tMax, step)
   const i0 = Math.floor(tMin / step),
     i1 = Math.floor(tMax / step)
   const indexes = Array.from({ length: i1 - i0 + 1 }, (_, i) => i + i0)

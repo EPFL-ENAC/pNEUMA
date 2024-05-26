@@ -77,7 +77,6 @@ onMounted(() => {
     loading.value = false
 
     map.on('sourcedata', (e: MapSourceDataEvent) => {
-      console.log('sourcedata', e)
       if (e.isSourceLoaded) loading.value = false
     })
 
@@ -103,7 +102,6 @@ onMounted(() => {
         throttle(
           () => {
             const newId = Number(features[0]?.id) || -1
-            console.log(newId)
 
             if (newId !== hoveredStateId) {
               if (hoveredStateId) {
