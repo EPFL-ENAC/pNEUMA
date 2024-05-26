@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import 'maplibre-gl/dist/maplibre-gl.css'
-import LoadingCircle from './LoadingCircle.vue'
+import LoadingCircle from '@/components/LoadingCircle.vue'
+import LegendMap from '@/components/LegendMap.vue'
 
 import {
   FullscreenControl,
-  GeolocateControl,
   Map as Maplibre,
   NavigationControl,
   Popup,
@@ -16,6 +16,7 @@ import {
   type StyleSetterOptions,
   type StyleSpecification
 } from 'maplibre-gl'
+import type { LegendColor } from '@/utils/legendColor'
 import { onMounted, ref, watch } from 'vue'
 
 const props = withDefaults(
@@ -29,6 +30,7 @@ const props = withDefaults(
     filterIds?: string[]
     popupLayerIds?: string[]
     areaLayerIds?: string[]
+    legendColors?: LegendColor[]
     callbackLoaded?: () => void
   }>(),
   {
@@ -55,7 +57,8 @@ onMounted(() => {
     center: props.center,
     zoom: props.zoom,
     minZoom: props.minZoom,
-    maxZoom: props.maxZoom
+    maxZoom: props.maxZoom,
+    attributionControl: false
   })
   // map.showTileBoundaries = true
   map.addControl(new NavigationControl({}))
@@ -224,6 +227,7 @@ watch(
   },
   { immediate: true }
 )
+
 watch(
   () => props.popupLayerIds,
   (popupLayerIds) => {
@@ -290,10 +294,11 @@ function filterLayers(filterIds?: string[]) {
 </script>
 
 <template>
-  <v-container class="pa-0 fill-height" fluid>
+  <v-container class="pa-0 position-relative fill-height" fluid>
     <div ref="container" class="map fill-height">
       <loading-circle :loading="loading" />
     </div>
+    <legend-map v-if="legendColors" :colors="legendColors"></legend-map>
   </v-container>
 </template>
 

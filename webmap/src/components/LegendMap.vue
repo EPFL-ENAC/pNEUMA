@@ -4,19 +4,15 @@
       Légende
       <v-btn
         :icon="show ? mdiChevronDown : mdiChevronUp"
-        @click="show = !show"
         flat
         density="compact"
+        @click="show = !show"
       ></v-btn>
     </h4>
     <div v-if="show" class="my-2">
-      <div class="legend-item" v-for="item in colors" :key="item.label">
+      <div v-for="item in colors" :key="item.label" class="legend-item">
         <div class="color-box" :style="{ backgroundColor: item.color }"></div>
-        <div class="label text-body-2">{{ item.distance }} {{ item.label }}</div>
-        <v-spacer></v-spacer>
-        <div v-if="item.category" class="code text-body-1 font-weight-medium">
-          {{ item.category }}
-        </div>
+        <div class="label text-body-2">{{ item.label }}</div>
       </div>
     </div>
   </div>
@@ -25,16 +21,9 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { mdiChevronUp, mdiChevronDown } from '@mdi/js'
-
-type Color = {
-  color: string
-  label: string
-  category?: string
-  distance?: string
-}
-
+import type { LegendColor } from '@/utils/legendColor'
 const props = defineProps<{
-  colors: Color[]
+  colors: LegendColor[]
   reverse?: boolean
 }>()
 const show = ref(true)

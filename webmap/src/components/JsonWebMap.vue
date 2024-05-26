@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import CustomRangeSlider from '@/components/CustomRangeSlider.vue'
 import MapLibreMap from '@/components/MapLibreMap.vue'
-import LegendMap from '@/components/LegendMap.vue'
 
 import type { Parameters } from '@/utils/jsonWebMap'
 import type { SelectableSingleItem } from '@/utils/layerSelector'
@@ -12,10 +11,40 @@ import {
   createExpressionAverageSpeed,
   createExpressionAverageFreq
 } from '@/utils/expressionMaplibre'
+import {
+  accelerationColors,
+  speedColors,
+  progressionColors,
+  vehicleTypeColors,
+  densityColors
+} from '@/utils/legendColor'
 
 import metadata from '@/utils/metadata'
 
 const isHexmapSelected = ref<boolean>(false)
+
+const legendColors = computed(() => {
+  if (isHexmapSelected.value) {
+    switch (hexmapSelection.value) {
+      case 'speed':
+        return speedColors
+      case 'freq':
+        return densityColors
+    }
+  } else {
+    switch (trajectoriesSelection.value) {
+      case 'speed':
+        return speedColors
+      case 'acceleration':
+        return accelerationColors
+      case 'progression':
+        return progressionColors
+      case 'vehicle_type':
+        return vehicleTypeColors
+    }
+  }
+  return []
+})
 
 watch(isHexmapSelected, (isHexmapSelected) => {
   if (isHexmapSelected && hexmapSelection.value == 'acceleration') hexmapSelection.value = 'speed'
@@ -76,22 +105,6 @@ const toVehicleTypeShort = (vehicleType: string) => {
   }
 }
 const selectedTypes = ref<string[]>(vehicleTypes)
-
-const legendItems = computed(() =>
-  (parameters.value.selectableItems ?? [])
-    .flatMap((item) => ('children' in item ? item.children : item))
-    .filter((item) => item.ids.some((id) => filterIds.value.includes(id)))
-    .flatMap((item) =>
-      item.legend !== undefined
-        ? [
-            {
-              label: item.label,
-              legend: item.legend
-            }
-          ]
-        : []
-    )
-)
 
 watch(
   () => props.parametersUrl,
@@ -369,8 +382,8 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
           :min-zoom="14"
           :callback-loaded="callbackMapLoaded"
           class="flex-grow-1"
+          :legend-colors="legendColors"
         />
-        <legend-map></legend-map>
         <v-divider class="border-opacity-100" />
 
         <v-card flat class="mt-auto pb-4 px-4">
