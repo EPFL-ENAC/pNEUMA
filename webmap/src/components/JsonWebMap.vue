@@ -304,7 +304,7 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
   <v-container class="fill-height pa-0" fluid>
     <v-row class="fill-height">
       <v-col cols="12" md="2" sm="6" class="pl-6">
-        <v-card>
+        <v-card flat>
           <v-card-title> Map type selection </v-card-title>
           <v-card-text>
             <v-switch
@@ -314,7 +314,9 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
             ></v-switch>
           </v-card-text>
         </v-card>
-        <v-card>
+        <v-divider />
+
+        <v-card flat>
           <v-card-title> Vehicle type </v-card-title>
           <v-card-text>
             <v-checkbox
@@ -328,8 +330,9 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
             />
           </v-card-text>
         </v-card>
+        <v-divider />
 
-        <v-card>
+        <v-card flat>
           <v-card-title>Color encoding</v-card-title>
           <v-card-text>
             <v-radio-group v-if="isHexmapSelected" v-model="hexmapSelection">
@@ -346,7 +349,13 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
         </v-card>
       </v-col>
       <v-divider class="border-opacity-100" vertical />
-      <v-col cols="12" md="10" sm="6" class="py-0 pl-0">
+      <v-col
+        id="map-time-input-container"
+        cols="12"
+        md="10"
+        sm="6"
+        class="py-0 pl-0 d-flex flex-column"
+      >
         <MapLibreMap
           ref="map"
           :center="parameters.center"
@@ -357,10 +366,11 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
           :max-zoom="20"
           :min-zoom="14"
           :callback-loaded="callbackMapLoaded"
+          class="flex-grow-1"
         />
         <v-divider class="border-opacity-100" />
 
-        <v-card class="px-6">
+        <v-card flat class="mt-auto pb-4 px-4">
           <v-card-title> Time range in seconds </v-card-title>
           <v-card-text>
             <custom-range-slider

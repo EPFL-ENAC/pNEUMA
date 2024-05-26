@@ -59,9 +59,12 @@ onMounted(() => {
   })
   // map.showTileBoundaries = true
   map.addControl(new NavigationControl({}))
-  map.addControl(new GeolocateControl({}))
   map.addControl(new ScaleControl({}))
-  map.addControl(new FullscreenControl({}))
+  map.addControl(
+    new FullscreenControl({
+      container: document.getElementById('map-time-input-container') ?? undefined
+    })
+  )
 
   // filterLayers(props.filterIds)
 
