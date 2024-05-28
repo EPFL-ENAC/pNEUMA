@@ -14,10 +14,14 @@ import {
   type LngLatLike,
   type MapSourceDataEvent,
   type StyleSetterOptions,
-  type StyleSpecification
+  type StyleSpecification,
+  addProtocol
 } from 'maplibre-gl'
 import type { LegendColor } from '@/utils/legendColor'
 import { onMounted, ref, watch } from 'vue'
+
+import { Protocol } from 'pmtiles'
+import { add } from 'lodash'
 
 const props = withDefaults(
   defineProps<{
@@ -49,8 +53,10 @@ const loading = ref(true)
 const container = ref<HTMLDivElement | null>(null)
 let map: Maplibre | undefined = undefined
 const hasLoaded = ref(false)
+const protocol = new Protocol()
 
 onMounted(() => {
+  addProtocol('pmtiles', protocol.tile)
   map = new Maplibre({
     container: container.value as HTMLDivElement,
     style: props.styleSpec,

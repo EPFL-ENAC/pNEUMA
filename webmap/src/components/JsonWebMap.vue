@@ -46,11 +46,6 @@ const legendColors = computed(() => {
   return []
 })
 
-watch(isHexmapSelected, (isHexmapSelected) => {
-  if (isHexmapSelected && hexmapSelection.value == 'acceleration') hexmapSelection.value = 'speed'
-  else if (!isHexmapSelected && hexmapSelection.value == 'freq') hexmapSelection.value = 'speed'
-})
-
 const props = defineProps<{
   styleUrl: string
   parametersUrl: string
@@ -85,7 +80,7 @@ const timeRange = ref<[number, number]>([
   metadata.trajectories['20181024_0830_0900'].tMax
 ])
 
-const vehicleTypes = ['Taxi', 'Bus', 'Heavy Vehicle', 'Medium Vehicle', 'Motorcycle', 'Car']
+const vehicleTypes = ['Car', 'Taxi', 'Bus', 'Motorcycle', 'Medium Vehicle', 'Heavy Vehicle']
 const toVehicleTypeShort = (vehicleType: string) => {
   switch (vehicleType) {
     case 'Taxi':
@@ -304,12 +299,10 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
   if (isHexmapSelected) {
     map.value?.setLayerVisibility('freq-heatmap', hexmapSelection === 'freq')
     map.value?.setLayerVisibility('speed-heatmap', hexmapSelection === 'speed')
-    map.value?.setLayerVisibility('acceleration-heatmap', hexmapSelection === 'acceleration')
     map.value?.setLayerVisibility('trajectories', false)
   } else {
     map.value?.setLayerVisibility('freq-heatmap', false)
     map.value?.setLayerVisibility('speed-heatmap', false)
-    map.value?.setLayerVisibility('acceleration-heatmap', false)
     map.value?.setLayerVisibility('trajectories', true)
   }
 })
@@ -322,17 +315,39 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
         <v-card flat>
           <v-card-title> Map type selection </v-card-title>
           <v-card-text>
-            <v-switch
-              v-model="isHexmapSelected"
-              hide-details
-              :label="isHexmapSelected ? 'Hexagonal map' : 'Trajectories'"
-            ></v-switch>
+            <v-switch v-model="isHexmapSelected" hide-details label="Aggregate"></v-switch>
+            <v-radio-group v-if="isHexmapSelected" v-model="hexmapSelection">
+              <v-radio label="Speed" value="speed"></v-radio>
+              <v-radio label="Density" :disabled="!isHexmapSelected" value="freq"></v-radio>
+              <v-radio
+                label="Acceleration"
+                :disabled="isHexmapSelected"
+                value="acceleration"
+              ></v-radio>
+              <v-radio
+                label="Progression"
+                :disabled="isHexmapSelected"
+                value="progression"
+              ></v-radio>
+              <v-radio
+                label="Vehicle type"
+                :disabled="isHexmapSelected"
+                value="vehicle_type"
+              ></v-radio>
+            </v-radio-group>
+            <v-radio-group v-else v-model="trajectoriesSelection">
+              <v-radio label="Speed" value="speed"></v-radio>
+              <v-radio label="Density" :disabled="!isHexmapSelected" value="freq"></v-radio>
+              <v-radio label="Acceleration" value="acceleration"></v-radio>
+              <v-radio label="Progression" value="progression"></v-radio>
+              <v-radio label="Vehicle type" value="vehicle_type"></v-radio>
+            </v-radio-group>
           </v-card-text>
         </v-card>
         <v-divider />
 
         <v-card flat>
-          <v-card-title> Vehicle type </v-card-title>
+          <v-card-title> Vehicle category </v-card-title>
           <v-card-text>
             <v-checkbox
               v-for="(item, index) in vehicleTypes"
@@ -346,22 +361,6 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
           </v-card-text>
         </v-card>
         <v-divider />
-
-        <v-card flat>
-          <v-card-title>Color encoding</v-card-title>
-          <v-card-text>
-            <v-radio-group v-if="isHexmapSelected" v-model="hexmapSelection">
-              <v-radio label="Density" value="freq"></v-radio>
-              <v-radio label="Speed" value="speed"></v-radio>
-            </v-radio-group>
-            <v-radio-group v-else v-model="trajectoriesSelection">
-              <v-radio label="Speed" value="speed"></v-radio>
-              <v-radio label="Acceleration" value="acceleration"></v-radio>
-              <v-radio label="Progression" value="progression"></v-radio>
-              <v-radio label="Vehicle type" value="vehicle_type"></v-radio>
-            </v-radio-group>
-          </v-card-text>
-        </v-card>
       </v-col>
       <v-divider class="border-opacity-100" vertical />
       <v-col
@@ -387,7 +386,7 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
         <v-divider class="border-opacity-100" />
 
         <v-card flat class="mt-auto pb-4 px-4">
-          <v-card-title> Time range in seconds </v-card-title>
+          <v-card-title> Time </v-card-title>
           <v-card-text>
             <custom-range-slider
               v-model="timeRange"

@@ -7,22 +7,24 @@
       "promoteId": "vehicle_id",
       "tilesDev": ["http://localhost/trajectories/{z}/{x}/{y}"],
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
-      "tiles": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
+      "url": "pmtiles://https://enacit4r-cdn.epfl.ch/pneuma/trajectories.pmtiles",
       "minzoom": 14,
       "maxzoom": 19
     },
     "heatmap": {
       "type": "vector",
+      "promoteId": "hex_id",
       "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
       "tilesDev": ["http://localhost/speed_hexmap/{z}/{x}/{y}"],
-      "tiles": ["https://pneuma-dev.epfl.ch/tiles/speed_hexmap/{z}/{x}/{y}"],
+      "url": "pmtiles://https://enacit4r-cdn.epfl.ch/pneuma/speed_hexmap.pmtiles",
       "minzoom": 14,
       "maxzoom": 19
     },
     "background": {
       "tileSize": 256,
       "tiles": ["https://tile.osm.ch/osm-swiss-style/{z}/{x}/{y}.png"],
-      "type": "raster"
+      "type": "raster",
+      "maxzoom": 19
     },
     "osm": {
       "type": "geojson",
@@ -118,43 +120,6 @@
           70,
           "#b5de2b",
           80,
-          "#fde725"
-        ]
-      }
-    },
-    {
-      "id": "acceleration-heatmap",
-      "type": "fill",
-      "source": "heatmap",
-      "source-layer": "speed_hexmap",
-      "layout": {
-        "visibility": "none"
-      },
-      "paint": {
-        "fill-opacity": 0.8,
-        "fill-color": [
-          "interpolate",
-          ["linear"],
-          ["to-number", ["get", "acceleration_1"]],
-          -1,
-          "#CCCCCC",
-          0,
-          "#440154",
-          0.3125,
-          "#482878",
-          0.625,
-          "#3e4989",
-          0.9375,
-          "#31688e",
-          1.25,
-          "#26828e",
-          1.5625,
-          "#1f9e89",
-          1.875,
-          "#35b779",
-          2.1875,
-          "#6ece58",
-          2.5,
           "#fde725"
         ]
       }
