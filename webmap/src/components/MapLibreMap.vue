@@ -55,6 +55,34 @@ let map: Maplibre | undefined = undefined
 const hasLoaded = ref(false)
 const protocol = new Protocol()
 
+const popup = ref<Popup>(
+  new Popup({
+    closeButton: false,
+    maxWidth: '800px'
+  })
+)
+
+function displaySegmentTime(t0: number, t1: number) {
+  // Start time of the recording
+  const startTime = new Date('2018-10-24T08:30:00')
+
+  // Calculate the midpoint in milliseconds
+  const timestamp = (t0 + t1) / 2
+
+  // Create a new date by adding the midpoint to the start time
+  const segmentTime = new Date(startTime.getTime() + timestamp)
+
+  // Format the time as hours:minutes
+  let hours = segmentTime.getHours()
+  let minutes = segmentTime.getMinutes()
+
+  // Ensuring two-digit minutes format
+  const displayMinutes = minutes < 10 ? '0' + minutes : minutes
+
+  // Return the formatted time
+  return `${hours}:${displayMinutes}`
+}
+
 onMounted(() => {
   addProtocol('pmtiles', protocol.tile)
   map = new Maplibre({
@@ -101,6 +129,7 @@ onMounted(() => {
         )
       }
       hoveredStateId = -1
+      popup.value.remove()
       if (map) map.getCanvas().classList.remove('hovered-feature')
     })
 
@@ -108,17 +137,38 @@ onMounted(() => {
       const features = e.features
       if (features && features.length > 0 && map) {
         map.getCanvas().classList.add('hovered-feature')
+        const feat = features[0]
         throttle(
           () => {
             const newId = Number(features[0]?.id) || -1
 
             if (newId !== hoveredStateId) {
-              if (hoveredStateId) {
+              if (hoveredStateId && map !== undefined) {
                 map?.setFeatureState(
                   { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
                   { hover: false }
                 )
               }
+
+              const { speed, acceleration, segment_index, t0, t1, vehicle_type } = feat.properties
+              const timestamp = (t0 + t1) / 2
+              if (hoveredStateId !== -1)
+                popup.value
+                  .setLngLat(e.lngLat)
+                  .setHTML(
+                    `<h3>${vehicle_type} - ${hoveredStateId} at ${displaySegmentTime(t0, t1)}</h3>
+                    </br>
+                    <div>
+                      Speed : <strong>${speed}</strong> km/h
+                    </div>
+                    <div>
+                      Acceleration : <strong>${acceleration.toFixed(2)}</strong> m.s-2
+                    </div>
+                    
+                  `
+                  )
+                  .addTo(map as Maplibre)
+
               hoveredStateId = newId
 
               map?.setFeatureState(
