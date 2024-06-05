@@ -14,7 +14,6 @@ import {
 import {
   accelerationColors,
   speedColors,
-  progressionColors,
   vehicleTypeColors,
   densityColors
 } from '@/utils/legendColor'
@@ -37,8 +36,6 @@ const legendColors = computed(() => {
         return speedColors
       case 'acceleration':
         return accelerationColors
-      case 'progression':
-        return progressionColors
       case 'vehicle_type':
         return vehicleTypeColors
     }
@@ -184,73 +181,44 @@ const setPaintTrajectories = (selection: string) => {
           -1,
           '#CCCCCC',
           0,
-          '#440154',
-          9,
-          '#482878',
-          18,
-          '#3e4989',
-          27,
-          '#31688e',
-          36,
-          '#26828e',
+          '#a50026',
+          5,
+          '#d73027',
+          15,
+          '#f46d43',
+          25,
+          '#fdae61',
+          35,
+          '#fee08b',
           45,
-          '#1f9e89',
-          54,
-          '#35b779',
-          63,
-          '#6ece58',
-          72,
-          '#b5de2b',
-          80,
-          '#fde725'
+          '#d9ef8b',
+          55,
+          '#a6d96a',
+          65,
+          '#66bd63',
+          75,
+          '#1a9850',
+          85,
+          '#006837'
         ]
         break
 
-      case 'progression':
-        newLineColor = [
-          'interpolate',
-          ['linear'],
-          ['to-number', ['get', 'progression']],
-          0,
-          '#440154',
-          10,
-          '#482878',
-          20,
-          '#3e4989',
-          30,
-          '#31688e',
-          40,
-          '#26828e',
-          50,
-          '#1f9e89',
-          60,
-          '#35b779',
-          70,
-          '#6ece58',
-          80,
-          '#b5de2b',
-          90,
-          '#fde725',
-          100,
-          '#fde725'
-        ]
-        break
       case 'vehicle_type':
         newLineColor = [
           'match',
           ['get', 'vehicle_type'],
           'Taxi',
-          '#1f77b4',
+          '#ffff33',
           'Car',
-          '#ff7f0e',
+          '#377eb8',
           'Motorcycle',
-          '#2ca02c',
+          '#e41a1c',
           'Medium Vehicle',
-          '#d62728',
+          '#a65628',
           'Heavy Vehicle',
-          '#9467bd',
-          'Bus',
           '#8c564b',
+          'Bus',
+          '#4daf4a',
           '#CCCCCC'
         ]
         break
@@ -313,9 +281,9 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
     <v-row class="fill-height">
       <v-col cols="12" md="2" sm="6" class="pl-6">
         <v-card flat>
-          <v-card-title> Map type selection </v-card-title>
+          <v-card-title> Trajectories </v-card-title>
           <v-card-text>
-            <v-switch v-model="isHexmapSelected" hide-details label="Aggregate"></v-switch>
+            <v-switch v-model="isHexmapSelected" hide-details label="Show aggregate"></v-switch>
             <v-radio-group v-if="isHexmapSelected" v-model="hexmapSelection">
               <v-radio label="Speed" value="speed"></v-radio>
               <v-radio label="Density" :disabled="!isHexmapSelected" value="freq"></v-radio>
@@ -323,11 +291,6 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
                 label="Acceleration"
                 :disabled="isHexmapSelected"
                 value="acceleration"
-              ></v-radio>
-              <v-radio
-                label="Progression"
-                :disabled="isHexmapSelected"
-                value="progression"
               ></v-radio>
               <v-radio
                 label="Vehicle type"
@@ -339,7 +302,6 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
               <v-radio label="Speed" value="speed"></v-radio>
               <v-radio label="Density" :disabled="!isHexmapSelected" value="freq"></v-radio>
               <v-radio label="Acceleration" value="acceleration"></v-radio>
-              <v-radio label="Progression" value="progression"></v-radio>
               <v-radio label="Vehicle type" value="vehicle_type"></v-radio>
             </v-radio-group>
           </v-card-text>
@@ -382,6 +344,7 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
           :callback-loaded="callbackMapLoaded"
           class="flex-grow-1"
           :legend-colors="legendColors"
+          :continuous-color="!(!isHexmapSelected && trajectoriesSelection == 'vehicle_type')"
         />
         <v-divider class="border-opacity-100" />
 

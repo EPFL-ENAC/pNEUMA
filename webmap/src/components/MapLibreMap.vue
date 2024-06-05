@@ -35,6 +35,7 @@ const props = withDefaults(
     popupLayerIds?: string[]
     areaLayerIds?: string[]
     legendColors?: LegendColor[]
+    continuousColor?: boolean
     callbackLoaded?: () => void
   }>(),
   {
@@ -354,7 +355,11 @@ function filterLayers(filterIds?: string[]) {
     <div ref="container" class="map fill-height">
       <loading-circle :loading="loading" />
     </div>
-    <legend-map v-if="legendColors" :colors="legendColors"></legend-map>
+    <legend-map
+      v-if="legendColors"
+      :colors="legendColors"
+      :is-continuous="continuousColor"
+    ></legend-map>
   </v-container>
 </template>
 
