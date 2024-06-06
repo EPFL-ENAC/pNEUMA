@@ -1,7 +1,7 @@
--- DROP FUNCTION public.speed_hexmap(int4, int4, int4, json);
+-- DROP FUNCTION public.hexmap(int4, int4, int4, json);
 
 CREATE OR REPLACE
-FUNCTION public.speed_hexmap(z integer,
+FUNCTION public.hexmap(z integer,
 x integer,
 y integer,
 query_params JSON)
@@ -67,7 +67,7 @@ FROM
 )
 -- Generate the MVT with pre-existing hexagonal grid
 SELECT
-    INTO mvt st_asmvt(tile, 'speed_hexmap', 4096, 'geom')
+    INTO mvt st_asmvt(tile, 'hexmap', 4096, 'geom')
 FROM (
     SELECT
         st_asmvtgeom(geom, tile_geom, 4096, 64, TRUE) AS geom,

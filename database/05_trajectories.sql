@@ -1,10 +1,6 @@
 -- DROP FUNCTION public.trajectories(int4, int4, int4, json);
 
-CREATE OR REPLACE
-FUNCTION public.trajectories(z integer,
-x integer,
-y integer,
-query_params JSON)
+CREATE OR REPLACE FUNCTION public.trajectories(z integer, x integer, y integer, query_params json)
  RETURNS bytea
  LANGUAGE plpgsql
  IMMUTABLE PARALLEL SAFE STRICT
@@ -25,16 +21,16 @@ y),
 4326);
 -- Determine group size based on zoom level
   
-    IF z <= 15 THEN
+    IF z <= 14 THEN
     	res_zoom := 6;
 
-ELSIF z <= 16 THEN
+ELSIF z = 15 THEN
         res_zoom := 3;
 
 ELSIF z <= 17 THEN
     res_zoom := 1.5;
 
-ELSIF z <= 18 THEN
+ELSIF z = 18 THEN
    		res_zoom := 0.5;
 
 ELSEIF z > 18 THEN
@@ -64,7 +60,6 @@ FROM
 		t1,
 		vehicle_type,
 		vehicle_id,
-		'youpi' AS test,
 		progression
 	FROM
 		segments s
