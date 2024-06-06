@@ -77,6 +77,56 @@ const timeRange = ref<[number, number]>([
   metadata.trajectories['20181024_0830_0900'].tMax
 ])
 
+const dates = ['20181024', '20181029', '20181030', '20181101']
+const dateItems = dates.map((dateStr) => {
+  const year = Number(dateStr.substring(0, 4))
+  const month = Number(dateStr.substring(4, 6))
+  const day = Number(dateStr.substring(6, 8))
+  const date = new Date(year, month - 1, day) // Month is 0-indexed in JS Date
+
+  return {
+    title: date.toLocaleDateString(), // Formats date in local format, adjust options as needed
+    value: dateStr
+  }
+})
+
+const selectedDate = ref<string>('20181101')
+const selectedTimeRange = ref<string>('1000_1030')
+
+const timeRanges = computed(() => {
+  if (selectedDate.value == '20181024')
+    return ['0830_0900', '0900_0930', '0930_1000', '1000_1030', '1030_1100']
+  else return ['0800_0830', '0830_0900', '0900_0930', '0930_1000', '1000_1030']
+})
+
+watch(timeRanges, (newRanges) => {
+  if (!newRanges.includes(selectedTimeRange.value)) selectedTimeRange.value = '1000_1030'
+})
+
+const timeRangeItems = computed(() => {
+  return timeRanges.value.map((range) => {
+    const start = range.split('_')[0]
+    const end = range.split('_')[1]
+    const formattedStart = `${start.substring(0, 2)}:${start.substring(2, 4)}`
+    const formattedEnd = `${end.substring(0, 2)}:${end.substring(2, 4)}`
+
+    return {
+      title: `${formattedStart} - ${formattedEnd}`,
+      value: range
+    }
+  })
+})
+
+watch([selectedDate, selectedTimeRange], () => {
+  const date = selectedDate.value,
+    time = selectedTimeRange.value
+  const base = 'pmtiles://https://enacit4r-cdn.epfl.ch/pneuma'
+  const url = `${base}/${date}_dX/${time}/`
+
+  map.value?.changeSourceTilesUrl('hexmap', url + 'hexmap.pmtiles')
+  map.value?.changeSourceTilesUrl('trajectories', url + 'trajectories.pmtiles')
+})
+
 const vehicleTypes = ['Car', 'Taxi', 'Bus', 'Motorcycle', 'Medium Vehicle', 'Heavy Vehicle']
 const toVehicleTypeShort = (vehicleType: string) => {
   switch (vehicleType) {
@@ -279,12 +329,32 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
 <template>
   <v-container class="fill-height pa-0" fluid>
     <v-row class="fill-height">
-      <v-col cols="12" md="2" sm="6" class="pl-6">
+      <v-col cols="12" md="2" sm="6" class="pl-6 fill-height overflow-y-auto">
+        <v-card flat>
+          <v-card-title>Dataset</v-card-title>
+          <v-card-text>
+            <v-select
+              v-model="selectedDate"
+              label="Date"
+              :items="dateItems"
+              variant="outlined"
+              class="pt-1"
+            ></v-select>
+            <v-select
+              v-model="selectedTimeRange"
+              label="Time"
+              :items="timeRangeItems"
+              variant="outlined"
+              class="pt-1"
+              hide-details
+            ></v-select>
+          </v-card-text>
+        </v-card>
         <v-card flat>
           <v-card-title> Trajectories </v-card-title>
           <v-card-text>
             <v-switch v-model="isHexmapSelected" hide-details label="Show aggregate"></v-switch>
-            <v-radio-group v-if="isHexmapSelected" v-model="hexmapSelection">
+            <v-radio-group v-if="isHexmapSelected" v-model="hexmapSelection" hide-details>
               <v-radio label="Speed" value="speed"></v-radio>
               <v-radio label="Density" :disabled="!isHexmapSelected" value="freq"></v-radio>
               <v-radio
@@ -298,7 +368,7 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
                 value="vehicle_type"
               ></v-radio>
             </v-radio-group>
-            <v-radio-group v-else v-model="trajectoriesSelection">
+            <v-radio-group v-else v-model="trajectoriesSelection" hide-details density="default">
               <v-radio label="Speed" value="speed"></v-radio>
               <v-radio label="Density" :disabled="!isHexmapSelected" value="freq"></v-radio>
               <v-radio label="Acceleration" value="acceleration"></v-radio>
@@ -306,7 +376,6 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
             </v-radio-group>
           </v-card-text>
         </v-card>
-        <v-divider />
 
         <v-card flat>
           <v-card-title> Vehicle category </v-card-title>
@@ -316,13 +385,13 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
               :key="index"
               v-model="selectedTypes"
               density="compact"
+              class="no-min-height"
               hide-details
               :label="item"
               :value="item"
             />
           </v-card-text>
         </v-card>
-        <v-divider />
       </v-col>
       <v-divider class="border-opacity-100" vertical />
       <v-col
@@ -365,8 +434,12 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
   </v-container>
 </template>
 
-<style>
+<style scoped>
 .v-slider-thumb__label span.thumb-label-nowrap {
   white-space: nowrap;
+}
+
+.no-min-height {
+  height: 32px;
 }
 </style>

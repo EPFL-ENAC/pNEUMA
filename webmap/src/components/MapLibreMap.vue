@@ -248,12 +248,12 @@ const onZoom = (callback: () => void) => {
 
 const changeSourceTilesUrl = (sourceId: string, url: string) => {
   const source = map?.getSource(sourceId) as VectorTileSource
-  source.setTiles([url])
+  source.setUrl(url)
 }
 
 const getSourceTilesUrl = (sourceId: string) => {
   const source = map?.getSource(sourceId) as VectorTileSource
-  if (source && source.tiles) return source.tiles[0]
+  if (source && source.url) return source.url
   else return ''
 }
 const setLayerVisibility = (layerId: string, visibility: boolean) => {
