@@ -1,0 +1,1 @@
+martin-cp --output-file hexmap.mbtiles --mbtiles-type normalized "--bbox=23.72224,37.97412,23.73979,37.99440" --min-zoom 15 --max-zoom 17 --source speed_hexmap postgresql://postgres:password@localhost:5432/postgres --on-duplicate override

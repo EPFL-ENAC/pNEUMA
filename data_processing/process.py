@@ -18,9 +18,13 @@ def process_chunk(chunk_data, chunk_index, output_dir):
     processed_data = []
     start_time = time.time()
 
+    # Ensure the output directory exists
+    os.makedirs(output_dir, exist_ok=True)
+
     temp_output_file = os.path.join(output_dir, f'temp_chunk_{chunk_index}.csv')
+    
     with open(temp_output_file, 'w', newline='') as f:
-        csv_writer = csv.writer(f)
+        csv_writer = csv.writer(f, quoting=csv.QUOTE_MINIMAL)
         for line in chunk_data:
             data = line.strip().split(';')
             track_id = data[0]
@@ -69,7 +73,8 @@ def process_chunk(chunk_data, chunk_index, output_dir):
             # f.write(','.join(map(str, row)) + '\n')
 
     end_time = time.time()
-    print(f"Chunk {chunk_index} processed in {end_time - start_time} seconds")
+    if chunk_index % 10 == 0: 
+        print(f"Chunk {chunk_index} processed in {end_time - start_time} seconds")
 
 def concatenate_files(output_file, output_dir):
     def sort_key(filename):
@@ -91,14 +96,13 @@ def concatenate_files(output_file, output_dir):
                         f_out.writelines(lines[1:])  # Skip the header line and write the rest
                 os.remove(os.path.join(output_dir, filename))
 
-def process(name: str) -> None:
-    if use_linestring :
-        output_file = name.replace('.csv', '_processed_lines.csv')
-    else : 
-        output_file = name.replace('.csv', '_processed_points.csv')
-    output_dir = os.path.dirname(output_file)
+def process(input_file: str, output_dir: str) -> None:
+    if use_linestring:
+        output_file = os.path.join(output_dir, os.path.basename(input_file).replace('.csv', '_processed_lines.csv'))
+    else:
+        output_file = os.path.join(output_dir, os.path.basename(input_file).replace('.csv', '_processed_points.csv'))
 
-    with open(name, 'r') as file:
+    with open(input_file, 'r') as file:
         lines = file.readlines()
         chunks = [lines[i:i + chunk_size] for i in range(1, len(lines), chunk_size)]
 
@@ -112,13 +116,17 @@ def process(name: str) -> None:
     concatenate_files(output_file, output_dir)
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python script.py <file_path>")
+    if len(sys.argv) < 2 or len(sys.argv) > 3:
+        print("Usage: python script.py <input_file> [output_directory]")
         sys.exit(1)
+
+    input_file = sys.argv[1]
+    output_dir = sys.argv[2] if len(sys.argv) == 3 else os.path.dirname(input_file)
+
 
     start_time = time.time()
     file_name = sys.argv[1]
-    process(file_name)
+    process(input_file,output_dir)
     end_time = time.time()
     print(f"File processed in {end_time - start_time} seconds")
 

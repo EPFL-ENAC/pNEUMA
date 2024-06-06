@@ -51,15 +51,24 @@ def wrangle_gdf(gdf,res):
     gdf = gdf.groupby('vehicle_id',sort=True).apply(calculate_progression).reset_index(drop=True)
     gdf['speed'] = gdf['speed'].astype(int)
     gdf['acceleration'] = gdf['acceleration'].apply(lambda x: Decimal("{:.2f}".format(x)).normalize())
-    gdf['res'] = Decimal(res).normalize()
+
+    normalized_decimal = Decimal(res).normalize()
+    if normalized_decimal == normalized_decimal.to_integral_value():
+        # Convert to int if it does not have a fractional part
+        gdf['res'] = int(normalized_decimal)
+    else:
+        # Otherwise, keep as Decimal or convert to string based on need
+        gdf['res'] = str(normalized_decimal)
     return gdf
 
 
 
 
-def main(input_file, output_prefix, res_levels=[10, 3, 0.5, 0.1]):
+def main(input_file, output_prefix, res_levels=[6, 3, 0.5, 0.1]):
     start_time = time.time()  # Start time
     print("Starting data processing...")
+
+    res_levels.sort()
 
     # Read CSV file
     print("Reading CSV file...")
@@ -99,7 +108,7 @@ def main(input_file, output_prefix, res_levels=[10, 3, 0.5, 0.1]):
 
     final_df = pd.concat(results, axis=0)
     print(final_df)
-    final_df.to_csv(f"{output_prefix}/segments_zoom_{'_'.join(map(str, res_levels_formatted))}.csv", index=False)
+    final_df.to_csv(f"{output_prefix}_res_{'_'.join(map(str, res_levels_formatted))}.csv", index=False)
 
     end_time = time.time()  # End time
     time_taken = end_time - start_time
@@ -111,7 +120,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process trajectory data.")
     parser.add_argument("input_file", help="Path to the input CSV file.")
     parser.add_argument("output_prefix", help="Path for the output CSV files.")
-    parser.add_argument("--res-levels", nargs="+", type=float, default=[10, 3, 0.5, 0.1], help="Res levels for segmentation. Default: [10, 3, 0.5, 0.1]")
+    parser.add_argument("--res-levels", nargs="+", type=float, default=[6, 3, 1.5, 0.5, 0.1], help="Res levels for segmentation. Default: [6, 3,1.5, 0.5, 0.1]")
     args = parser.parse_args()
     print(args.input_file, args.output_prefix,args.res_levels)
     main(args.input_file, args.output_prefix,args.res_levels)
