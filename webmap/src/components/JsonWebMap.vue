@@ -327,9 +327,9 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
 </script>
 
 <template>
-  <v-container class="fill-height pa-0" fluid>
-    <v-row class="fill-height">
-      <v-col cols="12" md="2" sm="6" class="pl-6 fill-height overflow-y-auto">
+  <v-container class="fill-height pa-0 overflow-hidden" fluid>
+    <v-row class="fill-height overflow-y-hidden">
+      <v-col cols="12" md="2" sm="6" class="pl-6 params-col overflow-y-auto overflow-x-hidden">
         <v-card flat>
           <v-card-title>Dataset</v-card-title>
           <v-card-text>
@@ -437,6 +437,10 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
 <style scoped>
 .v-slider-thumb__label span.thumb-label-nowrap {
   white-space: nowrap;
+}
+
+iframe>>.params-col {
+  max-height: 80vh;
 }
 
 .no-min-height {
