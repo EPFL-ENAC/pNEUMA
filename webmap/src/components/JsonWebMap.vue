@@ -439,8 +439,8 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
   white-space: nowrap;
 }
 
-iframe>>.params-col {
-  max-height: 80vh;
+.params-col {
+  max-height: 100vh;
 }
 
 .no-min-height {
