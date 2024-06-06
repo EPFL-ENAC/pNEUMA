@@ -25,7 +25,7 @@ const createExpressionAverageSpeed = (
     | string[]
   )[]
 
-  const summedFrequenciesExpression = ['coalesce', ['+', ...freqSumExpressions, 1], 1] as (
+  const summedFrequenciesExpression = ['coalesce', ['+', ...freqSumExpressions], 1] as (
     | string
     | string[]
   )[]
@@ -46,10 +46,14 @@ const createExpressionAverageFreq = (
     vehicle_types.map((type: string) => ['to-number', ['get', `freq_${type}_${i}`]])
   )
 
-  const summedFrequenciesExpression = ['coalesce', ['+', ...freqSumExpressions, 1], 1] as (
-    | string
-    | string[]
-  )[]
+  console.log(freqSumExpressions)
+
+  const dividerExpression = ['sqrt', ['to-number', ['get', 'area']]]
+  const summedFrequenciesExpression = [
+    '/',
+    ['coalesce', ['+', ...freqSumExpressions], 0],
+    dividerExpression
+  ] as (string | string[])[]
 
   // Create expressions to check for the existence of each freq_idx using 'has'
   const validCountExpressions = indexes.flatMap((i) =>
