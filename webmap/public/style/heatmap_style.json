@@ -18,7 +18,7 @@
       "tilesDev": ["http://localhost/hexmap/{z}/{x}/{y}"],
       "url": "pmtiles://https://enacit4r-cdn.epfl.ch/pneuma/20181101_dX/1000_1030/hexmap.pmtiles",
       "minzoom": 14,
-      "maxzoom": 19
+      "maxzoom": 17
     },
     "background": {
       "tileSize": 256,
