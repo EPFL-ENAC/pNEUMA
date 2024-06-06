@@ -125,7 +125,7 @@ onMounted(() => {
     map.on('mouseleave', 'trajectories', () => {
       if (hoveredStateId) {
         map?.setFeatureState(
-          { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+          { source: 'trajectories', sourceLayer: 'trajectories', id: hoveredStateId },
           { hover: false }
         )
       }
@@ -146,7 +146,7 @@ onMounted(() => {
             if (newId !== hoveredStateId) {
               if (hoveredStateId && map !== undefined) {
                 map?.setFeatureState(
-                  { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+                  { source: 'trajectories', sourceLayer: 'trajectories', id: hoveredStateId },
                   { hover: false }
                 )
               }
@@ -173,7 +173,7 @@ onMounted(() => {
               hoveredStateId = newId
 
               map?.setFeatureState(
-                { source: 'pneuma', sourceLayer: 'trajectories', id: hoveredStateId },
+                { source: 'trajectories', sourceLayer: 'trajectories', id: hoveredStateId },
                 { hover: true }
               )
             }
@@ -231,7 +231,7 @@ const setPaintProperty = (
 }
 
 const queryFeatures = (filter: any[]) => {
-  return map?.querySourceFeatures('pneuma', {
+  return map?.querySourceFeatures('trajectories', {
     sourceLayer: 'trajectories',
     filter: filter as FilterSpecification,
     validate: false
