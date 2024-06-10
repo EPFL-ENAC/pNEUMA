@@ -197,4 +197,24 @@ empty-segments:
 	@PGPASSWORD=$$DB_PASSWORD psql -h $$DB_HOST -p $$DB_PORT -U $$DB_USER -d $$DB_NAME -c "TRUNCATE TABLE public.segments CONTINUE IDENTITY RESTRICT;"
 
 
+# Rule to process individual datasets, truncate, insert, and extract timestamp info
+process-and-analyze-points:
+	@for dir in $(DEFAULT_FILES); do \
+		for file in $(DEFAULT_DATA_DIR)/$$dir/points/*.csv; do \
+			echo "\n\n\n"; \
+			echo "Processing dataset $$file..."; \
+			$(MAKE) truncate-insert-extract FILE=$$file; \
+		done; \
+	done
+
+# Helper rule to truncate, insert data, and extract timestamp information
+truncate-insert-extract:
+	@echo "Truncating points table...";
+	@$(MAKE) empty-points
+	@echo "Inserting data from $(FILE)...";
+	@$(MAKE) insert-points FILE=$(FILE)
+	@echo "Fetching min/max timestamp from points table...";
+	@echo "Dataset: $(FILE)" >> timestamps_range
+	@PGPASSWORD=$$DB_PASSWORD psql -h $$DB_HOST -p $$DB_PORT -U $$DB_USER -d $$DB_NAME -c "SELECT 'Min timestamp:', min(timestamp), 'Max timestamp:', max(timestamp) FROM points;" >> timestamps_range
+
 .PHONY: process-all process process-segments

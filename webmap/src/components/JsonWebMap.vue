@@ -19,6 +19,7 @@ import {
 } from '@/utils/legendColor'
 
 import metadata from '@/utils/metadata'
+import type { DatasetMetadata } from '@/utils/metadata'
 
 const isHexmapSelected = ref<boolean>(false)
 
@@ -72,11 +73,6 @@ const filterSingleVehicle = ref<boolean>(false)
 const hexmapSelection = ref<string>('speed')
 const trajectoriesSelection = ref<string>('speed')
 
-const timeRange = ref<[number, number]>([
-  metadata.trajectories['20181024_0830_0900'].tMin,
-  metadata.trajectories['20181024_0830_0900'].tMax
-])
-
 const dates = ['20181024', '20181029', '20181030', '20181101']
 const dateItems = dates.map((dateStr) => {
   const year = Number(dateStr.substring(0, 4))
@@ -126,6 +122,18 @@ watch([selectedDate, selectedTimeRange], () => {
   map.value?.changeSourceTilesUrl('hexmap', url + 'hexmap.pmtiles')
   map.value?.changeSourceTilesUrl('trajectories', url + 'trajectories.pmtiles')
 })
+
+const metadataSelected = computed<DatasetMetadata>(
+  () =>
+    (metadata.trajectories.get(selectedDate.value + '_' + selectedTimeRange.value) ||
+      metadata.trajectories.get('20181101_1000_1030')) as DatasetMetadata
+)
+
+watch(metadataSelected, ({ tMin, tMax }) => {
+  timeRange.value = [tMin, tMax]
+})
+
+const timeRange = ref<[number, number]>([metadataSelected.value.tMin, metadataSelected.value.tMax])
 
 const vehicleTypes = ['Car', 'Taxi', 'Bus', 'Motorcycle', 'Medium Vehicle', 'Heavy Vehicle']
 const toVehicleTypeShort = (vehicleType: string) => {
@@ -422,10 +430,10 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
           <v-card-text>
             <custom-range-slider
               v-model="timeRange"
-              :min="metadata.trajectories['20181024_0830_0900'].tMin"
-              :max="metadata.trajectories['20181024_0830_0900'].tMax"
+              :min="metadataSelected.tMin"
+              :max="metadataSelected.tMax"
               :step="metadata.hexmapTimeBinMs"
-              :start-date="metadata.trajectories['20181024_0830_0900'].dateStart"
+              :start-date="metadataSelected.dateStart"
             ></custom-range-slider>
           </v-card-text>
         </v-card>

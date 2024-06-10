@@ -46,8 +46,6 @@ const createExpressionAverageFreq = (
     vehicle_types.map((type: string) => ['to-number', ['get', `freq_${type}_${i}`]])
   )
 
-  console.log(freqSumExpressions)
-
   const dividerExpression = ['sqrt', ['to-number', ['get', 'area']]]
   const summedFrequenciesExpression = [
     '/',

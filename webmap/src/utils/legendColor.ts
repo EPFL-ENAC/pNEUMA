@@ -25,12 +25,16 @@ const speedColors: LegendColor[] = [
   { label: '85 km/h', color: '#006837' }
 ]
 const densityColors: LegendColor[] = [
-  { label: '0 vehicle frames/m²', color: '#002051' },
-  { label: '0.6 vehicle frames/m²', color: '#2b446e' },
-  { label: '1.2 vehicle frames/m²', color: '#696970' },
-  { label: '1.8 vehicle frames/m²', color: '#948f78' },
-  { label: '2.4 vehicle frames/m²', color: '#caba6a' },
-  { label: '3 vehicle frames/m²', color: '#fdea45' }
+  { label: '0 datapoints/m²', color: '#000004' },
+  { label: '2.2 datapoints/m²', color: '#1b0c41' },
+  { label: '4.4 datapoints/m²', color: '#4a0c6b' },
+  { label: '6.6 datapoints/m²', color: '#781c6d' },
+  { label: '8.8 datapoints/m²', color: '#a52c60' },
+  { label: '11 datapoints/m²', color: '#cf4446' },
+  { label: '13.2 datapoints/m²', color: '#ed6925' },
+  { label: '15.4 datapoints/m²', color: '#fb9b06' },
+  { label: '17.6 datapoints/m²', color: '#f7d13d' },
+  { label: '20 datapoints/m²', color: '#fcffa4' }
 ]
 const vehicleTypeColors: LegendColor[] = [
   { label: 'Taxi', color: '#ffff33' },
