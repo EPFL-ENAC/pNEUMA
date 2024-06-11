@@ -6,5 +6,9 @@ const styleUrl = import.meta.env.VITE_STYLE_URL
 </script>
 
 <template>
-  <JsonWebMap :parameters-url="parametersUrl" :style-url="styleUrl" />
+  <JsonWebMap
+    class="border-t-md border-b-md"
+    :parameters-url="parametersUrl"
+    :style-url="styleUrl"
+  />
 </template>

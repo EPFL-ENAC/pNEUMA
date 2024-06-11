@@ -337,7 +337,7 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
 <template>
   <v-container class="fill-height pa-0 overflow-hidden" fluid>
     <v-row class="fill-height overflow-y-hidden">
-      <v-col cols="12" md="2" sm="6" class="pl-6 params-col overflow-y-auto overflow-x-hidden">
+      <v-col cols="2" md="2" class="pl-6 params-col border-e-md overflow-y-auto overflow-x-hidden">
         <v-card flat>
           <v-card-title>Dataset</v-card-title>
           <v-card-text>
@@ -401,14 +401,7 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
           </v-card-text>
         </v-card>
       </v-col>
-      <v-divider class="border-opacity-100" vertical />
-      <v-col
-        id="map-time-input-container"
-        cols="12"
-        md="10"
-        sm="6"
-        class="py-0 pl-0 d-flex flex-column"
-      >
+      <v-col id="map-time-input-container" cols="10" md="10" class="py-0 pl-0 d-flex flex-column">
         <MapLibreMap
           ref="map"
           :center="parameters.center"
@@ -423,9 +416,8 @@ watch([hexmapSelection, isHexmapSelected], ([hexmapSelection, isHexmapSelected])
           :legend-colors="legendColors"
           :continuous-color="!(!isHexmapSelected && trajectoriesSelection == 'vehicle_type')"
         />
-        <v-divider class="border-opacity-100" />
 
-        <v-card flat class="mt-auto pb-4 px-4">
+        <v-card flat class="mt-auto border-t-md pb-4 px-4">
           <v-card-title> Time </v-card-title>
           <v-card-text>
             <custom-range-slider

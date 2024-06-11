@@ -113,6 +113,7 @@ onMounted(() => {
     if (!map) return
     hasLoaded.value = true
     loading.value = false
+    map.resize()
 
     map.on('sourcedata', (e: MapSourceDataEvent) => {
       if (e.isSourceLoaded) loading.value = false
