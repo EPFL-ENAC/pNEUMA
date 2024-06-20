@@ -2,14 +2,29 @@
   "version": 8,
   "name": "Empty Style",
   "sources": {
-    "pneuma": {
+    "trajectories": {
       "type": "vector",
-      "tiles": ["https://enacit4r-cdn.epfl.ch/pneuma/2023-05-12/{z}/{x}/{y}.pbf"]
+      "promoteId": "vehicle_id",
+      "tilesDev": ["http://localhost/trajectories/{z}/{x}/{y}"],
+      "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/trajectories/{z}/{x}/{y}"],
+      "url": "pmtiles://https://enacit4r-cdn.epfl.ch/pneuma/20181101_dX/1000_1030/trajectories.pmtiles",
+      "minzoom": 14,
+      "maxzoom": 19
+    },
+    "hexmap": {
+      "type": "vector",
+      "promoteId": "hex_id",
+      "tilesProd": ["https://pneuma-dev.epfl.ch/tiles/hexmap/{z}/{x}/{y}"],
+      "tilesDev": ["http://localhost/hexmap/{z}/{x}/{y}"],
+      "url": "pmtiles://https://enacit4r-cdn.epfl.ch/pneuma/20181101_dX/1000_1030/hexmap.pmtiles",
+      "minzoom": 14,
+      "maxzoom": 17
     },
     "background": {
       "tileSize": 256,
       "tiles": ["https://tile.osm.ch/osm-swiss-style/{z}/{x}/{y}.png"],
-      "type": "raster"
+      "type": "raster",
+      "maxzoom": 19
     },
     "osm": {
       "type": "geojson",
@@ -29,74 +44,126 @@
       }
     },
     {
-      "id": "heatmap",
-      "type": "heatmap",
-      "source": "pneuma",
-      "source-layer": "data",
-      "maxzoom": 24,
-      "layout": {
-        "visibility": "none"
-      },
-      "paint": {
-        "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 17, 0.2, 24, 2],
-        "heatmap-color": [
-          "interpolate",
-          ["linear"],
-          ["heatmap-density"],
-          0,
-          "rgba(33,102,172,0)",
-          0.2,
-          "rgb(103,169,207)",
-          0.4,
-          "rgb(209,229,240)",
-          0.6,
-          "rgb(253,219,199)",
-          0.8,
-          "rgb(239,138,98)",
-          1,
-          "rgb(178,24,43)"
-        ],
-        "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 17, 10, 24, 50]
-      }
-    },
-    {
-      "id": "ghost",
-      "type": "circle",
-      "source": "pneuma",
-      "source-layer": "data",
-      "layout": {
-        "visibility": "none"
-      },
-      "paint": {
-        "circle-color": "grey",
-        "circle-opacity": 0.3,
-        "circle-stroke-color": "transparent"
-      }
-    },
-    {
-      "id": "vehicles",
-      "type": "circle",
-      "source": "pneuma",
-      "source-layer": "data",
+      "id": "trajectories",
+      "type": "line",
+      "source": "trajectories",
+      "source-layer": "trajectories",
       "layout": {
         "visibility": "visible"
       },
+      "filter": ["!=", ["get", "id"], "0"],
+      "line-cap": "round",
       "paint": {
-        "circle-color": [
-          "interpolate-hcl",
+        "line-color": [
+          "interpolate",
           ["linear"],
           ["to-number", ["get", "speed"]],
+          -1,
+          "#CCCCCC",
           0,
-          "red",
-          10,
-          "yellow",
-          50,
-          "green"
+          "#a50026",
+          5,
+          "#d73027",
+          15,
+          "#f46d43",
+          25,
+          "#fdae61",
+          35,
+          "#fee08b",
+          45,
+          "#d9ef8b",
+          55,
+          "#a6d96a",
+          65,
+          "#66bd63",
+          75,
+          "#1a9850",
+          85,
+          "#006837"
         ],
-        "circle-opacity": 0.7,
-        "circle-stroke-color": "rgba(0,0,0,0.2)"
+        "line-width": ["case", ["boolean", ["feature-state", "hover"], false], 6, 2],
+        "line-opacity": ["case", ["boolean", ["feature-state", "hover"], false], 1, 0.1]
       }
     },
+    {
+      "id": "speed-heatmap",
+      "type": "fill",
+      "source": "hexmap",
+      "source-layer": "hexmap",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-opacity": 0.8,
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["to-number", ["get", "speed_1"]],
+          -1,
+          "#CCCCCC",
+          0,
+          "#a50026",
+          5,
+          "#d73027",
+          15,
+          "#f46d43",
+          25,
+          "#fdae61",
+          35,
+          "#fee08b",
+          45,
+          "#d9ef8b",
+          55,
+          "#a6d96a",
+          65,
+          "#66bd63",
+          75,
+          "#1a9850",
+          85,
+          "#006837"
+        ]
+      }
+    },
+    {
+      "id": "freq-heatmap",
+      "type": "fill",
+      "source": "hexmap",
+      "source-layer": "hexmap",
+      "layout": {
+        "visibility": "none"
+      },
+      "paint": {
+        "fill-opacity": 0.8,
+        "fill-color": [
+          "interpolate",
+          ["linear"],
+          ["/", ["to-number", ["get", "freq_1"]], ["to-number", ["get", "area"]]],
+          -1,
+          "#CCCCCC",
+          0,
+          "#000004",
+          0.2,
+          "#1b0c41",
+          0.4,
+          "#4a0c6b",
+          0.6,
+          "#781c6d",
+          0.8,
+          "#a52c60",
+          1.0,
+          "#cf4446",
+          1.2,
+          "#ed6925",
+          1.4,
+          "#fb9b06",
+          1.6,
+          "#f7d13d",
+          1.8,
+          "#fcffa4"
+        ]
+      }
+    },
+
     {
       "id": "traffic_signals",
       "type": "symbol",
