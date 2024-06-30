@@ -20,6 +20,20 @@ SEGMENT_SCRIPT=process_segments.py
 # Variable to define the base directory for uploads
 UPLOAD_DIR := ../data/pmtiles_upload
 
+
+# Fetch data for a specific date and time range
+fetch-data:
+	@echo "Fetching data for date $(DATE) and times $(TIMES)..."
+	@python fetch_data.py $(DATE) $(TIMES)
+
+# Fetch data for all predefined dates and times
+fetch-all-data:
+	@echo "Fetching data for all dates and times..."
+	@make fetch-data DATE="24/10/2018" TIMES="ALL"
+	@make fetch-data DATE="29/10/2018" TIMES="ALL"
+	@make fetch-data DATE="30/10/2018" TIMES="ALL"
+	@make fetch-data DATE="01/11/2018" TIMES="ALL"
+	
 # Rule to prepare pmtiles files for upload
 prepare-pmtiles-upload:
 	@mkdir -p $(UPLOAD_DIR)  # Create the upload directory if it doesn't exist
