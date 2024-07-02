@@ -4,7 +4,9 @@ This directory contains scripts and utilities for processing and managing the da
 
 ## Overview
 
-The `data_processing` folder is crucial for handling the extensive urban traffic datasets collected via drones. It includes scripts for processing raw data points, segmenting trajectories, generating tiles for mapping, and managing data uploads.
+The `data_processing` folder is crucial for handling the extensive urban traffic datasets collected via drones. It includes scripts for processing raw data points, segmenting trajectories, generating tiles for mapping, and managing data uploads.          
+                                                                                                        <img width="1079" alt="pNEUMA-workflow" src="https://github.com/EPFL-ENAC/pNEUMA/assets/20055338/e0956106-986a-48b7-83e5-e904a3fd1cee">
+
 
 ## Scripts and Files
 
