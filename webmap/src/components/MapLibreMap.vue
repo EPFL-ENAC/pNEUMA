@@ -50,7 +50,7 @@ const props = withDefaults(
   }
 )
 
-const loading = ref(true)
+const loading = ref<boolean>(true)
 const container = ref<HTMLDivElement | null>(null)
 let map: Maplibre | undefined = undefined
 const hasLoaded = ref(false)
@@ -112,16 +112,27 @@ onMounted(() => {
     // filterLayers(props.filterIds)
     if (!map) return
     hasLoaded.value = true
-    loading.value = false
     map.resize()
 
-    map.on('sourcedata', (e: MapSourceDataEvent) => {
-      if (e.isSourceLoaded) loading.value = false
-    })
+    function testTilesLoaded() {
+      if (map?.areTilesLoaded()) {
+        loading.value = false
+      } else {
+        loading.value = true
+        setTimeout(testTilesLoaded, 1000)
+      }
+    }
 
-    map.on('sourcedataloading', () => {
-      loading.value = true
-    })
+    function handleDataEvent(e: MapSourceDataEvent) {
+      if (map?.areTilesLoaded()) {
+        loading.value = false
+      } else {
+        testTilesLoaded()
+      }
+    }
+
+    map.on('sourcedata', handleDataEvent)
+    map.on('sourcedataloading', handleDataEvent)
 
     map.on('mouseleave', 'trajectories', () => {
       if (hoveredStateId) {
@@ -166,7 +177,7 @@ onMounted(() => {
                     <div>
                       Acceleration : <strong>${acceleration.toFixed(2)}</strong> m.s-2
                     </div>
-                    
+
                   `
                   )
                   .addTo(map as Maplibre)
@@ -189,8 +200,8 @@ onMounted(() => {
     if (props.callbackLoaded !== undefined) {
       props.callbackLoaded()
     }
+    testTilesLoaded()
   })
-  loading.value = false
 })
 
 let throttleTimer = new Map<string, boolean>()
